@@ -105,6 +105,35 @@ bpy.ops.object.camera_add(location=(6, -6, 4), rotation=(1.1, 0, 0.8))
 bpy.context.scene.camera = bpy.context.active_object
 ```
 
+**Apuntar una cámara o luz hacia un objeto (en vez de adivinar la rotación):**
+
+Fijar `rotation_euler` a mano obliga a calcular ángulos que dependen de dónde quedó el
+objeto, y cualquier cambio posterior de posición desencuadra la toma en silencio. Una
+constraint `TRACK_TO` hace que "apuntar al objeto" sea una garantía estructural: la cámara
+sigue al target aunque después lo muevas o lo reemplaces.
+
+```python
+import bpy
+cam = bpy.data.objects["camara_principal"]
+target = bpy.data.objects["silla"]
+
+c = cam.constraints.new(type='TRACK_TO')
+c.target = target
+c.track_axis = 'TRACK_NEGATIVE_Z'   # la cámara mira por su -Z
+c.up_axis = 'UP_Y'
+bpy.context.scene.camera = cam
+```
+
+Si preferís no dejar una constraint viva en la escena (por ejemplo para exportar), el
+equivalente calculado en el momento es `to_track_quat`:
+
+```python
+import bpy, mathutils
+cam = bpy.data.objects["camara_principal"]
+punto = mathutils.Vector((0, 0, 0.8))       # a dónde querés que mire
+cam.rotation_euler = (punto - cam.location).to_track_quat('-Z', 'Y').to_euler()
+```
+
 **Unir varios objetos en uno (útil tras armar una pieza compuesta):**
 ```python
 import bpy

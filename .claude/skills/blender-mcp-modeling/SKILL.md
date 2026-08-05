@@ -141,6 +141,26 @@ punto = mathutils.Vector((0, 0, 0.8))       # a dónde querés que mire
 cam.rotation_euler = (punto - cam.location).to_track_quat('-Z', 'Y').to_euler()
 ```
 
+**Al leer de vuelta un transform que acabás de escribir, actualizá primero.**
+`matrix_world` está cacheada y no se recalcula sola dentro del mismo bloque: si escribís
+`location`/`rotation_euler` y en la línea siguiente leés `matrix_world`, obtenés la matriz
+*previa* sin ningún error ni aviso. Medir así una cámara recién orientada da resultados
+disparatados que parecen un bug de tu código. Llamá `bpy.context.view_layer.update()`
+antes de leer, o pedí la versión evaluada:
+
+```python
+bpy.context.view_layer.update()
+mw = cam.matrix_world                      # ahora sí refleja lo que escribiste
+
+# equivalente, si además querés el efecto de constraints y modificadores:
+dg = bpy.context.evaluated_depsgraph_get()
+mw = cam.evaluated_get(dg).matrix_world
+```
+
+Esto importa sobre todo con constraints: una `TRACK_TO` no toca `rotation_euler` en
+absoluto — su efecto vive solo en el depsgraph evaluado, así que leer la rotación "cruda"
+de una cámara con constraint siempre va a parecer que no apunta a ningún lado.
+
 **Unir varios objetos en uno (útil tras armar una pieza compuesta):**
 ```python
 import bpy

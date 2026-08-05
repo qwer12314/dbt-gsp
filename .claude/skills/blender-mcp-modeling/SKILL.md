@@ -78,10 +78,17 @@ mod.segments = 3
 ```
 
 **Material simple vía Principled BSDF (color + metalness/roughness):**
+
+Cuidado con `mat.use_nodes = True`: en Blender 5.x ya emite `DeprecationWarning` y está
+anunciado para eliminarse en 6.0, porque los materiales nuevos ya vienen con árbol de
+nodos. Preguntá por `node_tree` y solo activá `use_nodes` si realmente falta — así el
+mismo código sirve en 4.x (donde hace falta) y en 5.x+ (donde ya no).
+
 ```python
 import bpy
 mat = bpy.data.materials.new(name="rojo_metalico")
-mat.use_nodes = True
+if mat.node_tree is None:          # Blender 4.x lo necesita; 5.x+ ya trae nodos
+    mat.use_nodes = True
 bsdf = mat.node_tree.nodes["Principled BSDF"]
 bsdf.inputs["Base Color"].default_value = (0.8, 0.05, 0.05, 1.0)
 bsdf.inputs["Metallic"].default_value = 0.9

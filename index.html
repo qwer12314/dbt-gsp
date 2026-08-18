@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>El Secreto del Faro</title>
+  <link rel="stylesheet" href="game/styles.css" />
+</head>
+<body>
+  <main id="game">
+    <header id="topbar">
+      <h1 id="title">Aventura gráfica</h1>
+      <span id="room-name"></span>
+      <nav id="sysbtns">
+        <button id="btn-save" title="Guardar partida">💾 Guardar</button>
+        <button id="btn-load" title="Cargar partida">📂 Cargar</button>
+        <button id="btn-restart" title="Empezar de nuevo">↺ Reiniciar</button>
+      </nav>
+    </header>
+
+    <section id="stage" aria-label="Escena del juego"></section>
+
+    <div id="status" aria-live="polite"></div>
+    <div id="message" aria-live="polite"></div>
+
+    <footer id="controls">
+      <div id="verbs">
+        <button data-verb="look" title="Mirar (1)">👁 Mirar</button>
+        <button data-verb="use" title="Usar / coger (2)">🖐 Usar</button>
+        <button data-verb="talk" title="Hablar (3)">💬 Hablar</button>
+      </div>
+      <div id="inventory" aria-label="Inventario"></div>
+    </footer>
+
+    <div id="ending" role="dialog" aria-modal="true">
+      <div class="card">
+        <h2></h2>
+        <p></p>
+        <button>Jugar otra vez</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="game/game-data.js"></script>
+  <script src="game/engine.js"></script>
+  <script>Engine.init(GAME_DATA);</script>
+</body>
+</html>

@@ -4,6 +4,10 @@ Una aventura gráfica clásica de apuntar y hacer clic, construida con un **moto
 HTML5 + JavaScript puro** (sin dependencias ni proceso de build). Funciona en cualquier
 navegador moderno, en escritorio y en móvil.
 
+Dos actos, seis escenas, personaje andante, conversaciones con opciones de respuesta,
+música y sonido generativos, puntuación estilo Sierra (135 puntos) y dos idiomas
+(español e inglés, botón EN/ES).
+
 ## Cómo jugar
 
 Abre `index.html` en el navegador. No hace falta servidor, aunque también puedes usar uno:
@@ -19,16 +23,20 @@ python3 -m http.server 8000
 
 | Acción | Cómo |
 |---|---|
+| Caminar | Clic en cualquier punto de la escena: el personaje va andando |
 | Mirar / Usar / Hablar | Botones de verbo (o teclas `1`, `2`, `3`) y clic en la escena |
 | Usar objeto con algo | Clic en el objeto del inventario y luego clic en la escena |
 | Examinar un objeto | Verbo *Mirar* + clic en el objeto del inventario |
+| Responder en un diálogo | Clic en una de las opciones del cuadro de texto |
 | Saltar un mensaje | Clic sobre el cuadro de texto |
 | Ver las zonas interactivas | Botón *✨ Pistas* o barra espaciadora |
-| Sonido sí/no | Botón *🔊 Sonido* (ambiente y efectos, sintetizados con WebAudio) |
+| Idioma | Botón *EN / ES* |
+| Sonido / Música | Botones *🔊* y *🎵* (todo sintetizado con WebAudio, sin archivos) |
 | Guardar / Cargar | Botones superiores (usa `localStorage`; además hay autoguardado al cambiar de sala) |
 
 **El objetivo:** el farero de Punta Bruma ha desaparecido, una tormenta se acerca y el faro
-lleva tres noches apagado. Consigue encenderlo antes de que algún barco acabe en las rocas.
+lleva tres noches apagado. Enciende el faro... y descubre después adónde se llevó el canto
+al farero. La puntuación máxima es ⭐ 135/135.
 
 ## Arquitectura: motor + datos (estructura de nodos)
 
@@ -38,35 +46,48 @@ habitación es un nodo independiente, lo que facilita añadir o quitar pantallas
 el resto del juego.
 
 ```
-index.html          Interfaz (escena, verbos, inventario, mensajes)
-game/styles.css     Estilo de la interfaz y animación ambiental de las escenas
-game/engine.js      Motor genérico: nodos, hotspots, verbos, inventario,
-                    flags, diálogos, condicionales, guardado
-game/audio.js       Sonido: ambiente de mar/viento y efectos, todo
-                    sintetizado con WebAudio (sin archivos de audio)
-game/game-data.js   EL JUEGO: habitaciones, objetos, puzles y textos
+index.html          Interfaz (escena, verbos, inventario, mensajes, marcador)
+game/styles.css     Estilo de la interfaz, animación ambiental y del personaje
+game/engine.js      Motor genérico: nodos, hotspots, personaje andante, verbos,
+                    inventario, flags, diálogos con opciones, condicionales,
+                    variantes de escena, puntuación, idiomas y guardado
+game/audio.js       Sonido: ambiente de mar/viento, música generativa y
+                    efectos, todo sintetizado con WebAudio (sin archivos)
+game/game-data.js   EL JUEGO: habitaciones, objetos, puzles y textos (es/en)
 ```
 
 ### Anatomía de una habitación (nodo)
 
+Los textos son bilingües con el helper `T(español, inglés)`; también se acepta un
+string simple si no necesitas traducción.
+
 ```js
 rooms: {
   miSala: {
-    name: "Nombre visible de la sala",
-    ambience: "interior",   // opcional: atenúa el sonido del mar
+    name: T("Nombre visible", "Visible name"),
+    ambience: "interior",   // opcional: "interior" o "cave" atenúan el mar y cambian la música
+    floor: { xMin: 60, xMax: 900, yMin: 420, yMax: 520 },  // zona transitable del personaje
+    spawns: { default: { x: 100, y: 470 }, desdeOtraSala: { x: 860, y: 480, facing: -1 } },
     svg: `... escena dibujada en SVG (viewBox 960x540) ...`,
-    onEnter: { say: "Texto al entrar (opcional)" },
+    variants: [   // capas extra de escena activadas por condición
+      { if: { flag: "faroEncendido" }, svg: `<circle .../>` },
+    ],
+    onEnter: { say: T("Texto al entrar", "Text on entry") },
     hotspots: [
       {
         id: "cofre",
-        name: "el cofre",                   // aparece en la barra de estado
+        name: T("el cofre", "the chest"),         // aparece en la barra de estado
         shape: { x: 100, y: 200, w: 80, h: 60 },  // o { circle: [cx,cy,rx,ry] } o { poly: "..." }
+        walkTo: { x: 140, y: 470 },               // adónde camina el personaje (opcional)
         visible: { notFlag: "cofreAbierto" },     // condición de visibilidad (opcional)
-        look: "Un cofre viejo.",
-        use:  { if: { hasItem: "llave" }, then: "...", else: "Está cerrado." },
-        talk: { dialog: [ { speaker: "Tú", text: "Hola, cofre." } ] },
-        items: {                             // usar objeto del inventario con el hotspot
-          llave: [ { removeItem: "llave" }, { setFlag: "cofreAbierto" }, "¡Abierto!" ],
+        look: T("Un cofre viejo.", "An old chest."),
+        use:  { if: { hasItem: "llave" }, then: "...", else: T("Está cerrado.", "It's locked.") },
+        talk: { choices: [                        // conversación con opciones de respuesta
+          { text: T("¿Qué guardas?", "What's inside?"), then: { dialog: [...] } },
+          { if: { flag: "pista" }, text: T("...", "..."), then: [...] },  // opción condicional
+        ] },
+        items: {                                  // usar objeto del inventario con el hotspot
+          llave: [ { removeItem: "llave" }, { setFlag: "cofreAbierto" }, { points: 10 }, "¡Abierto!" ],
         },
       },
     ],
@@ -86,8 +107,11 @@ Cualquier acción (`look`, `use`, `talk`, `items.X`, `onEnter`, `intro`) admite:
 | `{ dialog: [...] }` | Conversación (líneas con `speaker` opcional) |
 | `{ addItem / removeItem: "id" }` | Inventario |
 | `{ setFlag: "nombre" }` | Activa un flag de estado |
-| `{ goto: "sala" }` | Cambia de nodo/habitación (con fundido y autoguardado) |
-| `{ sfx: "pickup" }` | Efecto de sonido (`pickup`, `unlock`, `match`, `splash`, `success`) |
+| `{ goto: "sala", at: "spawn" }` | Cambia de nodo (con fundido, autoguardado y punto de aparición) |
+| `{ choices: [{text, then, if?}] }` | Opciones de respuesta en un diálogo (anidables) |
+| `{ points: 10 }` | Suma puntos al marcador estilo Sierra |
+| `{ sfx: "pickup" }` | Efecto de sonido (`pickup`, `unlock`, `match`, `splash`, `magic`, `success`) |
+| `{ interlude: { title, text } }` | Pantalla de capítulo con botón «Continuar» |
 | `{ if: cond, then: ..., else: ... }` | Condicional |
 | `{ once: true, do: ..., otherwise: ... }` | Solo la primera vez |
 | `{ ending: { title, text } }` | Pantalla de final |

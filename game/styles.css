@@ -52,6 +52,20 @@ body {
   flex: 1;
 }
 
+#score {
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+#score.pulse { animation: scorepulse 0.7s ease; }
+
+@keyframes scorepulse {
+  30% { transform: scale(1.25); text-shadow: 0 0 12px rgba(255, 217, 122, 0.9); }
+}
+
+#sysbtns button.off { opacity: 0.45; }
+
 #sysbtns button {
   background: var(--panel);
   color: var(--dim);
@@ -112,6 +126,24 @@ body {
   }
 }
 
+/* Animación de andar del personaje */
+@media (prefers-reduced-motion: no-preference) {
+  #player-g.walking .leg-l,
+  #player-g.walking .arm-r {
+    transform-box: fill-box;
+    transform-origin: top center;
+    animation: legswing 0.42s ease-in-out infinite alternate;
+  }
+  #player-g.walking .leg-r,
+  #player-g.walking .arm-l {
+    transform-box: fill-box;
+    transform-origin: top center;
+    animation: legswing 0.42s ease-in-out infinite alternate-reverse;
+  }
+}
+
+@keyframes legswing { from { transform: rotate(-16deg); } to { transform: rotate(16deg); } }
+
 @keyframes twinkle { from { opacity: 0.35; } to { opacity: 1; } }
 @keyframes sway { from { transform: rotate(-1.6deg); } to { transform: rotate(1.6deg); } }
 @keyframes glow { from { opacity: 0.08; } to { opacity: 0.22; } }
@@ -139,6 +171,33 @@ body {
 }
 
 #message .speaker { color: var(--accent); font-weight: bold; }
+
+/* Opciones de diálogo */
+.choices {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.choices button {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 1.02rem;
+  text-align: left;
+  padding: 3px 6px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.choices button:hover,
+.choices button:focus-visible {
+  color: var(--accent);
+  background: var(--panel-2);
+  outline: none;
+}
 
 #message.pop { animation: pop 0.18s ease; }
 
@@ -238,7 +297,14 @@ body {
 
 #ending h2 { color: var(--accent); margin-bottom: 14px; font-size: 1.6rem; }
 
-#ending p { line-height: 1.55; margin-bottom: 22px; }
+#ending p { line-height: 1.55; margin-bottom: 14px; }
+
+#ending .score {
+  color: var(--accent);
+  font-size: 1.1rem;
+  margin-bottom: 18px;
+  min-height: 1.2em;
+}
 
 #ending button {
   background: var(--accent);

@@ -4,35 +4,95 @@
  * Estructura basada en nodos: cada habitación (room) es un nodo
  * independiente con su escena SVG, sus hotspots y sus salidas.
  * El juego se define de forma declarativa en game-data.js.
+ *
+ * Capacidades: personaje andante con perspectiva, verbos,
+ * inventario, flags, diálogos con opciones de respuesta,
+ * condicionales, variantes de escena, puntuación, interludios,
+ * dos idiomas (es/en) y guardado en localStorage.
  * ============================================================ */
 
 const Engine = (() => {
   const SAVE_KEY = "pnc-save-v1";
+  const LANG_KEY = "pnc-lang";
 
   let GAME = null;
-
-  // Estado mutable de la partida
   let state = null;
 
   // Verbo activo: "look" | "use" | "talk"
   let verb = "use";
-
-  // Objeto del inventario seleccionado (para "usar X con Y"), o null
   let selectedItem = null;
+  let lang = localStorage.getItem(LANG_KEY) === "en" ? "en" : "es";
 
-  // Cola de mensajes pendientes de mostrar
+  // Cola de mensajes / diálogos
   let msgQueue = [];
   let msgTimer = null;
+  let choicesActive = false;
+  let pendingOverlay = null; // final o interludio pospuesto hasta vaciar la cola
+  let overlayMode = "restart";
+  let pendingAt = null; // punto de aparición del jugador en la próxima sala
+
+  // ---------- Textos de la interfaz ----------
+
+  const UI = {
+    es: {
+      verbs: { look: "👁 Mirar", use: "🖐 Usar", talk: "💬 Hablar" },
+      verbNames: { look: "Mirar", use: "Usar", talk: "Hablar con" },
+      useWith: (i, h) => `Usar ${i} con ${h}`,
+      useWithDots: (i) => `Usar ${i} con...`,
+      hints: "✨ Pistas",
+      soundOn: "🔊 Sonido",
+      soundOff: "🔇 Sonido",
+      music: "🎵 Música",
+      save: "💾 Guardar",
+      load: "📂 Cargar",
+      restart: "↺ Reiniciar",
+      playAgain: "Jugar otra vez",
+      cont: "Continuar",
+      saved: "Partida guardada.",
+      loaded: "Partida cargada.",
+      noSave: "No hay ninguna partida guardada.",
+      score: (s, m) => `⭐ ${s}/${m}`,
+    },
+    en: {
+      verbs: { look: "👁 Look", use: "🖐 Use", talk: "💬 Talk" },
+      verbNames: { look: "Look at", use: "Use", talk: "Talk to" },
+      useWith: (i, h) => `Use ${i} with ${h}`,
+      useWithDots: (i) => `Use ${i} with...`,
+      hints: "✨ Hints",
+      soundOn: "🔊 Sound",
+      soundOff: "🔇 Sound",
+      music: "🎵 Music",
+      save: "💾 Save",
+      load: "📂 Load",
+      restart: "↺ Restart",
+      playAgain: "Play again",
+      cont: "Continue",
+      saved: "Game saved.",
+      loaded: "Game loaded.",
+      noSave: "There is no saved game.",
+      score: (s, m) => `⭐ ${s}/${m}`,
+    },
+  };
+  const ui = () => UI[lang];
+
+  // Resuelve un texto localizable: "hola" o { es: "hola", en: "hello" }
+  function L(v) {
+    if (v == null) return "";
+    if (typeof v === "string") return v;
+    return v[lang] !== undefined ? v[lang] : v.es;
+  }
+
+  function isText(v) {
+    return (
+      typeof v === "string" ||
+      (v && !Array.isArray(v) && (v.es !== undefined || v.en !== undefined))
+    );
+  }
 
   // ---------- Utilidades de estado ----------
 
   function freshState() {
-    return {
-      room: GAME.start,
-      inventory: [],
-      flags: {},
-      seen: {}, // acciones "once" ya ejecutadas
-    };
+    return { room: GAME.start, inventory: [], flags: {}, seen: {}, score: 0 };
   }
 
   function hasItem(id) {
@@ -46,11 +106,6 @@ const Engine = (() => {
       flashInventory(id);
       audio("sfx", "pickup");
     }
-  }
-
-  // Puente opcional con el módulo de sonido (el juego funciona sin él)
-  function audio(fn, arg) {
-    if (typeof Sound !== "undefined" && Sound[fn]) Sound[fn](arg);
   }
 
   function removeItem(id) {
@@ -67,13 +122,39 @@ const Engine = (() => {
     return !!state.flags[name];
   }
 
+  // Puente opcional con el módulo de sonido (el juego funciona sin él)
+  function audio(fn, arg) {
+    if (typeof Sound !== "undefined" && Sound[fn]) Sound[fn](arg);
+  }
+
+  function addPoints(n) {
+    state.score = (state.score || 0) + n;
+    updateScore(true);
+  }
+
+  function updateScore(pulse) {
+    const el = document.getElementById("score");
+    if (!el) return;
+    if (!GAME.maxScore) {
+      el.textContent = "";
+      return;
+    }
+    el.textContent = ui().score(state.score || 0, GAME.maxScore);
+    if (pulse) {
+      el.classList.remove("pulse");
+      void el.offsetWidth;
+      el.classList.add("pulse");
+    }
+  }
+
   // ---------- Intérprete de acciones ----------
   // Una acción puede ser:
-  //   - string                  → mostrar mensaje
-  //   - array                   → secuencia de acciones
-  //   - function(api)           → lógica libre en JS
-  //   - objeto declarativo      → { say, goto, addItem, removeItem,
-  //                                 setFlag, dialog, once, if/then/else, ending }
+  //   - string o texto {es,en}   → mostrar mensaje
+  //   - array                    → secuencia
+  //   - function(api)            → lógica libre en JS
+  //   - objeto declarativo       → { say, dialog, choices, addItem,
+  //       removeItem, setFlag, goto, at, sfx, points, once,
+  //       if/then/else, interlude, ending }
 
   function checkCond(cond) {
     if (typeof cond === "function") return !!cond(api);
@@ -89,7 +170,7 @@ const Engine = (() => {
   function run(action, onceKey) {
     if (action == null) return;
 
-    if (typeof action === "string") {
+    if (isText(action)) {
       say(action);
       return;
     }
@@ -102,7 +183,6 @@ const Engine = (() => {
       return;
     }
 
-    // Objeto declarativo
     if (action.if !== undefined) {
       run(checkCond(action.if) ? action.then : action.else, onceKey);
       return;
@@ -119,73 +199,274 @@ const Engine = (() => {
     }
 
     if (action.sfx) audio("sfx", action.sfx);
+    if (action.points) addPoints(action.points);
     if (action.say) say(action.say);
     if (action.dialog) playDialog(action.dialog);
+    if (action.choices) {
+      msgQueue.push({ choices: action.choices });
+      if (!msgTimer && !choicesActive) nextMessage();
+    }
     if (action.addItem) addItem(action.addItem);
     if (action.removeItem) removeItem(action.removeItem);
     if (action.setFlag) setFlag(action.setFlag, action.value !== false);
-    if (action.goto) gotoRoom(action.goto);
-    if (action.ending) showEnding(action.ending);
+    if (action.goto) gotoRoom(action.goto, action.at);
+    if (action.interlude) queueOverlay(action.interlude, "continue");
+    if (action.ending) queueOverlay(action.ending, "restart");
   }
 
   // API que se expone a las funciones definidas en game-data.js
   const api = {
     say: (t) => say(t),
-    goto: (r) => gotoRoom(r),
+    goto: (r, at) => gotoRoom(r, at),
     addItem,
     removeItem,
     hasItem,
     setFlag,
     flag,
+    addPoints,
     dialog: (lines) => playDialog(lines),
-    ending: (e) => showEnding(e),
     run: (a) => run(a),
     state: () => state,
+    lang: () => lang,
   };
 
-  // ---------- Mensajes y diálogos ----------
+  // ---------- Mensajes, diálogos y opciones ----------
 
   function say(text) {
     msgQueue.push({ text });
-    if (!msgTimer) nextMessage();
+    if (!msgTimer && !choicesActive) nextMessage();
   }
 
   function playDialog(lines) {
     lines.forEach((l) =>
-      msgQueue.push(typeof l === "string" ? { text: l } : l)
+      msgQueue.push(l && l.choices ? l : isText(l) ? { text: l } : l)
     );
-    if (!msgTimer) nextMessage();
+    if (!msgTimer && !choicesActive) nextMessage();
   }
 
   function nextMessage() {
     const box = document.getElementById("message");
     if (msgQueue.length === 0) {
       msgTimer = null;
+      flushOverlay();
       return;
     }
     const m = msgQueue.shift();
+    if (m.choices) {
+      renderChoices(m.choices, box);
+      return;
+    }
     box.innerHTML = "";
     if (m.speaker) {
       const s = document.createElement("span");
       s.className = "speaker";
-      s.textContent = m.speaker + ": ";
+      s.textContent = L(m.speaker) + ": ";
       box.appendChild(s);
     }
-    box.appendChild(document.createTextNode(m.text));
+    const text = L(m.text);
+    box.appendChild(document.createTextNode(text));
     box.classList.remove("pop");
     void box.offsetWidth; // reinicia la animación
     box.classList.add("pop");
-    const ms = Math.max(2200, 55 * m.text.length);
+    const ms = Math.max(2200, 55 * text.length);
     msgTimer = setTimeout(nextMessage, ms);
   }
 
+  function renderChoices(choices, box) {
+    choicesActive = true;
+    msgTimer = null;
+    box.innerHTML = "";
+    const wrap = document.createElement("div");
+    wrap.className = "choices";
+    choices
+      .filter((c) => !c.if || checkCond(c.if))
+      .forEach((c) => {
+        const b = document.createElement("button");
+        b.textContent = "› " + L(c.text);
+        b.addEventListener("click", (e) => {
+          e.stopPropagation();
+          choicesActive = false;
+          box.innerHTML = "";
+          run(c.then);
+          if (!msgTimer && !choicesActive) nextMessage();
+        });
+        wrap.appendChild(b);
+      });
+    box.appendChild(wrap);
+  }
+
   function skipMessage() {
+    if (choicesActive) return;
     if (msgTimer) {
       clearTimeout(msgTimer);
       msgTimer = null;
-      if (msgQueue.length) nextMessage();
-      else document.getElementById("message").textContent = "";
+      if (msgQueue.length) {
+        nextMessage();
+      } else {
+        document.getElementById("message").textContent = "";
+        flushOverlay();
+      }
     }
+  }
+
+  // ---------- Final e interludios ----------
+
+  function queueOverlay(data, mode) {
+    if (msgTimer || msgQueue.length || choicesActive) {
+      pendingOverlay = { data, mode };
+    } else {
+      showOverlay(data, mode);
+    }
+  }
+
+  function flushOverlay() {
+    if (pendingOverlay) {
+      const p = pendingOverlay;
+      pendingOverlay = null;
+      showOverlay(p.data, p.mode);
+    }
+  }
+
+  function showOverlay(data, mode) {
+    overlayMode = mode;
+    if (mode === "restart") audio("sfx", "success");
+    const ov = document.getElementById("ending");
+    ov.querySelector("h2").textContent = L(data.title);
+    ov.querySelector("p").textContent = L(data.text);
+    const sc = ov.querySelector(".score");
+    if (sc) {
+      sc.textContent =
+        mode === "restart" && GAME.maxScore
+          ? ui().score(state.score || 0, GAME.maxScore)
+          : "";
+    }
+    ov.querySelector("button").textContent =
+      mode === "restart" ? ui().playAgain : ui().cont;
+    ov.classList.add("show");
+  }
+
+  // ---------- Personaje ----------
+
+  const PLAYER_SVG = `
+    <g class="pj">
+      <ellipse cx="0" cy="0" rx="16" ry="4" fill="#000" opacity="0.25"/>
+      <g class="leg-l"><rect x="-9" y="-36" width="8" height="36" rx="3" fill="#24405c"/></g>
+      <g class="leg-r"><rect x="1" y="-36" width="8" height="36" rx="3" fill="#2c4d6e"/></g>
+      <path d="M-13 -80 L13 -80 L11 -34 L-11 -34 Z" fill="#8c3b32"/>
+      <rect x="-14" y="-80" width="28" height="9" fill="#742f28"/>
+      <g class="arm-l"><rect x="-18" y="-76" width="6" height="32" rx="3" fill="#742f28"/></g>
+      <g class="arm-r"><rect x="12" y="-76" width="6" height="32" rx="3" fill="#742f28"/></g>
+      <circle cx="0" cy="-90" r="11" fill="#d9a066"/>
+      <path d="M-11 -93 Q0 -106 11 -93 L11 -88 L-11 -88 Z" fill="#c9a227"/>
+      <rect x="-11" y="-90" width="22" height="2.5" fill="#8a6d1d"/>
+    </g>`;
+
+  const player = {
+    x: 0, y: 0, tx: 0, ty: 0,
+    cb: null, facing: 1, walking: false, raf: 0, el: null,
+  };
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+  function playerScale(y) {
+    const f = room().floor;
+    if (!f) return 1;
+    const t = (y - f.yMin) / (f.yMax - f.yMin || 1);
+    return 0.55 + 0.5 * clamp(t, 0, 1);
+  }
+
+  function paintPlayer() {
+    if (!player.el) return;
+    const s = playerScale(player.y);
+    player.el.setAttribute(
+      "transform",
+      `translate(${player.x} ${player.y}) scale(${s * player.facing} ${s})`
+    );
+    player.el.classList.toggle("walking", player.walking);
+  }
+
+  function stopWalk() {
+    cancelAnimationFrame(player.raf);
+    player.walking = false;
+    player.cb = null;
+  }
+
+  function spawnPlayer(at) {
+    const r = room();
+    const g = document.getElementById("player-g");
+    if (!r.floor || !g) {
+      player.el = null;
+      return;
+    }
+    g.innerHTML = PLAYER_SVG;
+    player.el = g;
+    const f = r.floor;
+    const p =
+      (r.spawns && (r.spawns[at] || r.spawns.default)) ||
+      { x: (f.xMin + f.xMax) / 2, y: f.yMax - 20 };
+    player.x = clamp(p.x, f.xMin, f.xMax);
+    player.y = clamp(p.y, f.yMin, f.yMax);
+    player.facing = p.facing || 1;
+    player.walking = false;
+    player.cb = null;
+    paintPlayer();
+  }
+
+  // Camina hasta un punto (acotado a la zona transitable) y ejecuta cb al llegar
+  function walkTo(pt, cb) {
+    const f = room().floor;
+    if (!f || !player.el) {
+      if (cb) cb();
+      return;
+    }
+    player.tx = clamp(pt.x, f.xMin, f.xMax);
+    player.ty = clamp(pt.y, f.yMin, f.yMax);
+    player.cb = cb || null;
+    if (Math.abs(player.tx - player.x) > 4) {
+      player.facing = player.tx > player.x ? 1 : -1;
+    }
+    if (!player.walking) {
+      player.walking = true;
+      let last = performance.now();
+      const step = (now) => {
+        if (!player.el || !player.walking) return;
+        const dt = Math.min(0.05, (now - last) / 1000);
+        last = now;
+        const speed = (window.PNC_FAST ? 8000 : 250) * playerScale(player.y);
+        const dx = player.tx - player.x;
+        const dy = player.ty - player.y;
+        const d = Math.hypot(dx, dy);
+        if (d <= speed * dt) {
+          player.x = player.tx;
+          player.y = player.ty;
+          player.walking = false;
+          paintPlayer();
+          const done = player.cb;
+          player.cb = null;
+          if (done) done();
+          return;
+        }
+        player.x += (dx / d) * speed * dt;
+        player.y += (dy / d) * speed * dt;
+        paintPlayer();
+        player.raf = requestAnimationFrame(step);
+      };
+      player.raf = requestAnimationFrame(step);
+    }
+    paintPlayer();
+  }
+
+  function hotspotCenter(h) {
+    const s = h.shape;
+    if (s.circle) return { x: s.circle[0], y: s.circle[1] };
+    if (s.poly) {
+      const pts = s.poly.split(" ").map((p) => p.split(",").map(Number));
+      return {
+        x: pts.reduce((a, p) => a + p[0], 0) / pts.length,
+        y: pts.reduce((a, p) => a + p[1], 0) / pts.length,
+      };
+    }
+    return { x: s.x + s.w / 2, y: s.y + s.h / 2 };
   }
 
   // ---------- Renderizado ----------
@@ -194,11 +475,13 @@ const Engine = (() => {
     return GAME.rooms[state.room];
   }
 
-  function gotoRoom(id) {
+  function gotoRoom(id, at) {
     if (!GAME.rooms[id]) {
       console.warn("Habitación desconocida:", id);
       return;
     }
+    stopWalk();
+    pendingAt = at || null;
     const stage = document.getElementById("stage");
     stage.classList.add("fade");
     setTimeout(() => {
@@ -208,7 +491,7 @@ const Engine = (() => {
       renderInventory();
       stage.classList.remove("fade");
       const r = room();
-      audio("setAmbience", r.ambience === "interior" ? 0.25 : 1);
+      audio("setScene", r.ambience || "sea");
       autosave();
       if (r.onEnter) run(r.onEnter, "enter:" + id);
     }, 220);
@@ -236,15 +519,37 @@ const Engine = (() => {
     return r;
   }
 
+  // Capas de escena adicionales activadas por condición (p. ej. el faro encendido)
+  function variantSvg(r) {
+    if (!r.variants) return "";
+    return r.variants
+      .filter((v) => checkCond(v.if))
+      .map((v) => v.svg)
+      .join("");
+  }
+
   function renderRoom() {
     const r = room();
-    document.getElementById("room-name").textContent = r.name;
+    document.getElementById("room-name").textContent = L(r.name);
 
     const stage = document.getElementById("stage");
     stage.innerHTML =
       `<svg id="scene" viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet">` +
       r.svg +
-      `<g id="hotspots"></g></svg>`;
+      variantSvg(r) +
+      `<g id="player-g"></g><g id="hotspots"></g></svg>`;
+
+    const svg = stage.querySelector("svg");
+    // Clic en la escena (fuera de un hotspot): caminar hasta allí
+    svg.addEventListener("click", (e) => {
+      if (choicesActive) return;
+      skipMessage();
+      const rect = svg.getBoundingClientRect();
+      walkTo({
+        x: ((e.clientX - rect.left) / rect.width) * 960,
+        y: ((e.clientY - rect.top) / rect.height) * 540,
+      });
+    });
 
     const layer = stage.querySelector("#hotspots");
     r.hotspots.forEach((h) => {
@@ -260,15 +565,30 @@ const Engine = (() => {
       el.addEventListener("mouseleave", () => setStatus(""));
       layer.appendChild(el);
     });
+
+    spawnPlayer(pendingAt);
+    pendingAt = null;
+  }
+
+  // Re-renderiza la sala (hotspots o variantes cambiados) sin mover al jugador
+  function refreshScene() {
+    const px = player.x, py = player.y, pf = player.facing;
+    const had = player.el != null;
+    renderRoom();
+    if (had && player.el) {
+      player.x = px;
+      player.y = py;
+      player.facing = pf;
+      paintPlayer();
+    }
   }
 
   function actionLabel(h) {
     if (selectedItem) {
       const it = GAME.items[selectedItem];
-      return `Usar ${it.name} con ${h.name}`;
+      return ui().useWith(L(it.name), L(h.name));
     }
-    const v = { look: "Mirar", use: "Usar", talk: "Hablar con" }[verb];
-    return `${v} ${h.name}`;
+    return `${ui().verbNames[verb]} ${L(h.name)}`;
   }
 
   function setStatus(text) {
@@ -278,24 +598,31 @@ const Engine = (() => {
   // ---------- Interacción ----------
 
   function onHotspot(h) {
+    if (choicesActive) return;
     skipMessage();
-    if (selectedItem) {
-      const handler = h.items && h.items[selectedItem];
-      const key = `${state.room}:${h.id}:item:${selectedItem}`;
-      if (handler !== undefined) run(handler, key);
-      else say(GAME.defaults.cantUseItem);
-      selectedItem = null;
-      renderInventory();
-      renderRoom();
+    const held = selectedItem;
+
+    const act = () => {
+      if (held) {
+        const handler = h.items && h.items[held];
+        const key = `${state.room}:${h.id}:item:${held}`;
+        if (handler !== undefined && hasItem(held)) run(handler, key);
+        else say(GAME.defaults.cantUseItem);
+        selectedItem = null;
+        renderInventory();
+        updateCursor();
+      } else {
+        const handler = h[verb];
+        const key = `${state.room}:${h.id}:${verb}`;
+        if (handler !== undefined) run(handler, key);
+        else say(GAME.defaults[verb]);
+      }
+      refreshScene(); // hotspots o variantes condicionales pueden haber cambiado
       setStatus("");
-      return;
-    }
-    const handler = h[verb];
-    const key = `${state.room}:${h.id}:${verb}`;
-    if (handler !== undefined) run(handler, key);
-    else say(GAME.defaults[verb]);
-    renderRoom(); // los hotspots condicionales pueden haber cambiado
-    setStatus("");
+    };
+
+    // El personaje camina hasta el objetivo antes de actuar
+    walkTo(h.walkTo || hotspotCenter(h), act);
   }
 
   function setVerb(v) {
@@ -338,11 +665,12 @@ const Engine = (() => {
       const it = GAME.items[id];
       const b = document.createElement("button");
       b.className = "item" + (selectedItem === id ? " selected" : "");
-      b.title = it.name;
+      b.title = L(it.name);
       b.dataset.item = id;
       b.innerHTML = `<svg viewBox="0 0 48 48">${it.icon}</svg>`;
       b.addEventListener("click", () => {
         skipMessage();
+        if (choicesActive) return;
         if (verb === "look") {
           say(it.desc || it.name);
           return;
@@ -350,7 +678,7 @@ const Engine = (() => {
         selectedItem = selectedItem === id ? null : id;
         renderInventory();
         updateCursor();
-        setStatus(selectedItem ? `Usar ${it.name} con...` : "");
+        setStatus(selectedItem ? ui().useWithDots(L(it.name)) : "");
       });
       inv.appendChild(b);
     });
@@ -364,21 +692,47 @@ const Engine = (() => {
     }
   }
 
-  // ---------- Final del juego ----------
+  // ---------- Idioma ----------
 
-  function showEnding(e) {
-    audio("sfx", "success");
-    const ov = document.getElementById("ending");
-    ov.querySelector("h2").textContent = e.title;
-    ov.querySelector("p").textContent = e.text;
-    ov.classList.add("show");
+  function paintChrome() {
+    document.querySelectorAll("#verbs button").forEach((b) => {
+      b.textContent = ui().verbs[b.dataset.verb];
+    });
+    const set = (id, text) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = text;
+    };
+    set("btn-hint", ui().hints);
+    set("btn-save", ui().save);
+    set("btn-load", ui().load);
+    set("btn-restart", ui().restart);
+    set("btn-music", ui().music);
+    set("btn-lang", lang === "es" ? "EN" : "ES");
+    const muteBtn = document.getElementById("btn-mute");
+    if (muteBtn && typeof Sound !== "undefined") {
+      muteBtn.textContent = Sound.isMuted() ? ui().soundOff : ui().soundOn;
+    } else if (muteBtn) {
+      muteBtn.textContent = ui().soundOn;
+    }
+    document.getElementById("title").textContent = L(GAME.title);
+    document.title = L(GAME.title);
+  }
+
+  function toggleLang() {
+    lang = lang === "es" ? "en" : "es";
+    localStorage.setItem(LANG_KEY, lang);
+    paintChrome();
+    refreshScene();
+    renderInventory();
+    updateScore();
+    setStatus("");
   }
 
   // ---------- Guardado ----------
 
   function save() {
     localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-    say("Partida guardada.");
+    say(ui().saved);
   }
 
   // Autoguardado silencioso en cada cambio de sala
@@ -392,23 +746,33 @@ const Engine = (() => {
       localStorage.getItem(SAVE_KEY) ||
       localStorage.getItem(SAVE_KEY + "-auto");
     if (!raw) {
-      say("No hay ninguna partida guardada.");
+      say(ui().noSave);
       return;
     }
     state = JSON.parse(raw);
+    state.score = state.score || 0;
     selectedItem = null;
     renderRoom();
     renderInventory();
-    say("Partida cargada.");
+    updateScore();
+    audio("setScene", room().ambience || "sea");
+    say(ui().loaded);
   }
 
   function restart() {
     state = freshState();
     selectedItem = null;
     msgQueue = [];
+    choicesActive = false;
+    pendingOverlay = null;
+    if (msgTimer) clearTimeout(msgTimer);
+    msgTimer = null;
+    document.getElementById("message").textContent = "";
     document.getElementById("ending").classList.remove("show");
     renderRoom();
     renderInventory();
+    updateScore();
+    audio("setScene", room().ambience || "sea");
     run(GAME.intro, "intro");
   }
 
@@ -418,20 +782,19 @@ const Engine = (() => {
     GAME = gameData;
     state = freshState();
 
-    document.getElementById("title").textContent = GAME.title;
-    document.title = GAME.title;
-
     document.querySelectorAll("#verbs button").forEach((b) =>
       b.addEventListener("click", () => setVerb(b.dataset.verb))
     );
     document.getElementById("btn-save").addEventListener("click", save);
     document.getElementById("btn-load").addEventListener("click", load);
     document.getElementById("btn-restart").addEventListener("click", restart);
-    document
-      .getElementById("ending")
-      .querySelector("button")
-      .addEventListener("click", restart);
     document.getElementById("message").addEventListener("click", skipMessage);
+
+    const endBtn = document.getElementById("ending").querySelector("button");
+    endBtn.addEventListener("click", () => {
+      if (overlayMode === "restart") restart();
+      else document.getElementById("ending").classList.remove("show");
+    });
 
     // Atajos de teclado: 1/2/3 para verbos, espacio para revelar hotspots
     document.addEventListener("keydown", (e) => {
@@ -449,16 +812,36 @@ const Engine = (() => {
 
     const muteBtn = document.getElementById("btn-mute");
     if (muteBtn) {
-      const paint = (m) => (muteBtn.textContent = m ? "🔇 Sonido" : "🔊 Sonido");
-      if (typeof Sound !== "undefined") paint(Sound.isMuted());
       muteBtn.addEventListener("click", () => {
-        if (typeof Sound !== "undefined") paint(Sound.toggleMute());
+        if (typeof Sound !== "undefined") {
+          muteBtn.textContent = Sound.toggleMute()
+            ? ui().soundOff
+            : ui().soundOn;
+        }
       });
     }
 
+    const musicBtn = document.getElementById("btn-music");
+    if (musicBtn) {
+      if (typeof Sound !== "undefined") {
+        musicBtn.classList.toggle("off", Sound.isMusicOff());
+      }
+      musicBtn.addEventListener("click", () => {
+        if (typeof Sound !== "undefined") {
+          musicBtn.classList.toggle("off", Sound.toggleMusic());
+        }
+      });
+    }
+
+    const langBtn = document.getElementById("btn-lang");
+    if (langBtn) langBtn.addEventListener("click", toggleLang);
+
+    paintChrome();
     setVerb("use");
     renderRoom();
     renderInventory();
+    updateScore();
+    audio("setScene", room().ambience || "sea");
     run(GAME.intro, "intro");
   }
 

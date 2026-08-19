@@ -23,7 +23,9 @@ python3 -m http.server 8000
 | Usar objeto con algo | Clic en el objeto del inventario y luego clic en la escena |
 | Examinar un objeto | Verbo *Mirar* + clic en el objeto del inventario |
 | Saltar un mensaje | Clic sobre el cuadro de texto |
-| Guardar / Cargar | Botones superiores (usa `localStorage`) |
+| Ver las zonas interactivas | Botón *✨ Pistas* o barra espaciadora |
+| Sonido sí/no | Botón *🔊 Sonido* (ambiente y efectos, sintetizados con WebAudio) |
+| Guardar / Cargar | Botones superiores (usa `localStorage`; además hay autoguardado al cambiar de sala) |
 
 **El objetivo:** el farero de Punta Bruma ha desaparecido, una tormenta se acerca y el faro
 lleva tres noches apagado. Consigue encenderlo antes de que algún barco acabe en las rocas.
@@ -37,9 +39,11 @@ el resto del juego.
 
 ```
 index.html          Interfaz (escena, verbos, inventario, mensajes)
-game/styles.css     Estilo de la interfaz
+game/styles.css     Estilo de la interfaz y animación ambiental de las escenas
 game/engine.js      Motor genérico: nodos, hotspots, verbos, inventario,
                     flags, diálogos, condicionales, guardado
+game/audio.js       Sonido: ambiente de mar/viento y efectos, todo
+                    sintetizado con WebAudio (sin archivos de audio)
 game/game-data.js   EL JUEGO: habitaciones, objetos, puzles y textos
 ```
 
@@ -49,6 +53,7 @@ game/game-data.js   EL JUEGO: habitaciones, objetos, puzles y textos
 rooms: {
   miSala: {
     name: "Nombre visible de la sala",
+    ambience: "interior",   // opcional: atenúa el sonido del mar
     svg: `... escena dibujada en SVG (viewBox 960x540) ...`,
     onEnter: { say: "Texto al entrar (opcional)" },
     hotspots: [
@@ -81,7 +86,8 @@ Cualquier acción (`look`, `use`, `talk`, `items.X`, `onEnter`, `intro`) admite:
 | `{ dialog: [...] }` | Conversación (líneas con `speaker` opcional) |
 | `{ addItem / removeItem: "id" }` | Inventario |
 | `{ setFlag: "nombre" }` | Activa un flag de estado |
-| `{ goto: "sala" }` | Cambia de nodo/habitación (con fundido) |
+| `{ goto: "sala" }` | Cambia de nodo/habitación (con fundido y autoguardado) |
+| `{ sfx: "pickup" }` | Efecto de sonido (`pickup`, `unlock`, `match`, `splash`, `success`) |
 | `{ if: cond, then: ..., else: ... }` | Condicional |
 | `{ once: true, do: ..., otherwise: ... }` | Solo la primera vez |
 | `{ ending: { title, text } }` | Pantalla de final |

@@ -44,7 +44,13 @@ const Engine = (() => {
       state.inventory.push(id);
       renderInventory();
       flashInventory(id);
+      audio("sfx", "pickup");
     }
+  }
+
+  // Puente opcional con el módulo de sonido (el juego funciona sin él)
+  function audio(fn, arg) {
+    if (typeof Sound !== "undefined" && Sound[fn]) Sound[fn](arg);
   }
 
   function removeItem(id) {
@@ -112,6 +118,7 @@ const Engine = (() => {
       return;
     }
 
+    if (action.sfx) audio("sfx", action.sfx);
     if (action.say) say(action.say);
     if (action.dialog) playDialog(action.dialog);
     if (action.addItem) addItem(action.addItem);
@@ -201,6 +208,8 @@ const Engine = (() => {
       renderInventory();
       stage.classList.remove("fade");
       const r = room();
+      audio("setAmbience", r.ambience === "interior" ? 0.25 : 1);
+      autosave();
       if (r.onEnter) run(r.onEnter, "enter:" + id);
     }, 220);
   }
@@ -296,6 +305,28 @@ const Engine = (() => {
       .querySelectorAll("#verbs button")
       .forEach((b) => b.classList.toggle("active", b.dataset.verb === v));
     renderInventory();
+    updateCursor();
+  }
+
+  // Cursor con el icono del verbo activo (o del objeto seleccionado)
+  function updateCursor() {
+    const glyph = selectedItem
+      ? "🎒"
+      : { look: "👁", use: "🖐", talk: "💬" }[verb];
+    const svg =
+      `<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30">` +
+      `<text y="24" font-size="22">${glyph}</text></svg>`;
+    document.documentElement.style.setProperty(
+      "--hotspot-cursor",
+      `url("data:image/svg+xml,${encodeURIComponent(svg)}") 8 8, pointer`
+    );
+  }
+
+  // Resalta brevemente todos los hotspots de la escena (tecla espacio o botón)
+  function revealHotspots() {
+    const stage = document.getElementById("stage");
+    stage.classList.add("reveal");
+    setTimeout(() => stage.classList.remove("reveal"), 1600);
   }
 
   // ---------- Inventario ----------
@@ -318,6 +349,7 @@ const Engine = (() => {
         }
         selectedItem = selectedItem === id ? null : id;
         renderInventory();
+        updateCursor();
         setStatus(selectedItem ? `Usar ${it.name} con...` : "");
       });
       inv.appendChild(b);
@@ -335,6 +367,7 @@ const Engine = (() => {
   // ---------- Final del juego ----------
 
   function showEnding(e) {
+    audio("sfx", "success");
     const ov = document.getElementById("ending");
     ov.querySelector("h2").textContent = e.title;
     ov.querySelector("p").textContent = e.text;
@@ -348,8 +381,16 @@ const Engine = (() => {
     say("Partida guardada.");
   }
 
+  // Autoguardado silencioso en cada cambio de sala
+  function autosave() {
+    localStorage.setItem(SAVE_KEY + "-auto", JSON.stringify(state));
+  }
+
   function load() {
-    const raw = localStorage.getItem(SAVE_KEY);
+    // Prefiere el guardado manual; si no existe, recurre al autoguardado
+    const raw =
+      localStorage.getItem(SAVE_KEY) ||
+      localStorage.getItem(SAVE_KEY + "-auto");
     if (!raw) {
       say("No hay ninguna partida guardada.");
       return;
@@ -392,12 +433,28 @@ const Engine = (() => {
       .addEventListener("click", restart);
     document.getElementById("message").addEventListener("click", skipMessage);
 
-    // Atajos de teclado: 1/2/3 para verbos
+    // Atajos de teclado: 1/2/3 para verbos, espacio para revelar hotspots
     document.addEventListener("keydown", (e) => {
       if (e.key === "1") setVerb("look");
       if (e.key === "2") setVerb("use");
       if (e.key === "3") setVerb("talk");
+      if (e.key === " ") {
+        e.preventDefault();
+        revealHotspots();
+      }
     });
+
+    const hintBtn = document.getElementById("btn-hint");
+    if (hintBtn) hintBtn.addEventListener("click", revealHotspots);
+
+    const muteBtn = document.getElementById("btn-mute");
+    if (muteBtn) {
+      const paint = (m) => (muteBtn.textContent = m ? "🔇 Sonido" : "🔊 Sonido");
+      if (typeof Sound !== "undefined") paint(Sound.isMuted());
+      muteBtn.addEventListener("click", () => {
+        if (typeof Sound !== "undefined") paint(Sound.toggleMute());
+      });
+    }
 
     setVerb("use");
     renderRoom();

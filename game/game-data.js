@@ -54,6 +54,11 @@ const GAME_DATA = {
       desc: "Una caja de cerillas casi llena. «Fósforos La Sirena».",
       icon: `<rect x="10" y="20" width="28" height="14" rx="2" fill="#31577d"/><rect x="10" y="20" width="28" height="5" fill="#24405c"/><rect x="24" y="8" width="3" height="16" fill="#d9b98a" transform="rotate(20 24 8)"/><circle cx="30" cy="9" r="4" fill="#e2574c"/>`,
     },
+    nota: {
+      name: "nota del farero",
+      desc: "«Tres noches oyendo cantos desde la cueva del sur. Esta vez bajaré a ver. Si alguien lee esto: el aceite de repuesto está en la alacena. Cuidad de mi faro. — El farero»",
+      icon: `<rect x="10" y="8" width="28" height="34" rx="2" fill="#e8d9b0"/><g stroke="#8a7a52" stroke-width="2.5"><line x1="15" y1="17" x2="33" y2="17"/><line x1="15" y1="24" x2="33" y2="24"/><line x1="15" y1="31" x2="27" y2="31"/></g>`,
+    },
   },
 
   rooms: {
@@ -70,12 +75,12 @@ const GAME_DATA = {
           </linearGradient>
         </defs>
         <rect width="960" height="330" fill="url(#sky)"/>
-        <g fill="#e8ecff"><circle cx="90" cy="60" r="2"/><circle cx="210" cy="110" r="1.5"/><circle cx="330" cy="45" r="2"/><circle cx="480" cy="90" r="1.5"/><circle cx="600" cy="40" r="2"/><circle cx="720" cy="120" r="1.5"/><circle cx="860" cy="70" r="2"/><circle cx="150" cy="160" r="1.5"/><circle cx="560" cy="150" r="1.5"/></g>
+        <g fill="#e8ecff" class="anim-twinkle"><circle cx="90" cy="60" r="2"/><circle cx="210" cy="110" r="1.5"/><circle cx="330" cy="45" r="2"/><circle cx="480" cy="90" r="1.5"/><circle cx="600" cy="40" r="2"/><circle cx="720" cy="120" r="1.5"/><circle cx="860" cy="70" r="2"/><circle cx="150" cy="160" r="1.5"/><circle cx="560" cy="150" r="1.5"/></g>
         <circle cx="790" cy="85" r="42" fill="#f4edd8"/><circle cx="775" cy="75" r="10" fill="#e3dbc2"/><circle cx="805" cy="98" r="7" fill="#e3dbc2"/>
         <rect y="300" width="960" height="240" fill="url(#sea)"/>
         <g stroke="#3d6a94" stroke-width="3" opacity="0.6"><line x1="60" y1="340" x2="180" y2="340"/><line x1="420" y1="365" x2="560" y2="365"/><line x1="740" y1="345" x2="880" y2="345"/><line x1="200" y1="395" x2="330" y2="395"/></g>
         <!-- barca -->
-        <g>
+        <g class="anim-sway">
           <path d="M640 330 Q700 372 780 330 L764 302 L656 302 Z" fill="#6b4a2f"/>
           <path d="M640 330 Q700 372 780 330 L774 318 L648 318 Z" fill="#57390f" opacity="0.55"/>
           <rect x="706" y="240" width="6" height="66" fill="#4a3321"/>
@@ -87,7 +92,7 @@ const GAME_DATA = {
         <rect x="70" y="180" width="10" height="245" fill="#2c2c38"/>
         <rect x="56" y="150" width="38" height="42" rx="6" fill="#1d1d28"/>
         <rect x="63" y="158" width="24" height="26" fill="#ffd97a"/>
-        <circle cx="75" cy="171" r="34" fill="#ffd97a" opacity="0.14"/>
+        <circle cx="75" cy="171" r="34" fill="#ffd97a" opacity="0.14" class="anim-glow"/>
         <!-- pescador sentado -->
         <g>
           <circle cx="560" cy="342" r="16" fill="#d9a066"/>
@@ -195,7 +200,7 @@ const GAME_DATA = {
           </linearGradient>
         </defs>
         <rect width="960" height="540" fill="url(#sky2)"/>
-        <g fill="#e8ecff"><circle cx="120" cy="70" r="2"/><circle cx="260" cy="40" r="1.5"/><circle cx="420" cy="90" r="2"/><circle cx="640" cy="50" r="1.5"/><circle cx="840" cy="100" r="2"/><circle cx="500" cy="30" r="1.5"/></g>
+        <g fill="#e8ecff" class="anim-twinkle"><circle cx="120" cy="70" r="2"/><circle cx="260" cy="40" r="1.5"/><circle cx="420" cy="90" r="2"/><circle cx="640" cy="50" r="1.5"/><circle cx="840" cy="100" r="2"/><circle cx="500" cy="30" r="1.5"/></g>
         <circle cx="150" cy="90" r="36" fill="#f4edd8"/><circle cx="140" cy="82" r="9" fill="#e3dbc2"/>
         <!-- faro lejano -->
         <g id="g-faro-lejano">
@@ -257,6 +262,7 @@ const GAME_DATA = {
               if: { flag: "llaveRecuperada" },
               then: "No hace falta volver a bajar la cuerda.",
               else: [
+                { sfx: "splash" },
                 { removeItem: "cuerda" },
                 { addItem: "llave" },
                 { setFlag: "llaveRecuperada" },
@@ -324,7 +330,7 @@ const GAME_DATA = {
           </linearGradient>
         </defs>
         <rect width="960" height="540" fill="url(#sky3)"/>
-        <g fill="#e8ecff"><circle cx="100" cy="80" r="2"/><circle cx="220" cy="140" r="1.5"/><circle cx="760" cy="60" r="2"/><circle cx="870" cy="150" r="1.5"/><circle cx="300" cy="50" r="1.5"/></g>
+        <g fill="#e8ecff" class="anim-twinkle"><circle cx="100" cy="80" r="2"/><circle cx="220" cy="140" r="1.5"/><circle cx="760" cy="60" r="2"/><circle cx="870" cy="150" r="1.5"/><circle cx="300" cy="50" r="1.5"/></g>
         <circle cx="820" cy="90" r="40" fill="#f4edd8"/><circle cx="808" cy="80" r="10" fill="#e3dbc2"/>
         <!-- terreno rocoso -->
         <path d="M0 430 Q240 400 480 424 Q720 448 960 416 L960 540 L0 540 Z" fill="#3a4152"/>
@@ -350,7 +356,7 @@ const GAME_DATA = {
           <rect x="472" y="352" width="16" height="22" rx="3" fill="#2c2c38"/>
         </g>
         <!-- gaviota -->
-        <g id="g-gaviota">
+        <g id="g-gaviota" class="anim-bob">
           <ellipse cx="640" cy="410" rx="20" ry="13" fill="#e8ecf5"/>
           <circle cx="657" cy="398" r="8" fill="#e8ecf5"/>
           <path d="M663 396 L674 399 L663 402 Z" fill="#e2a13c"/>
@@ -377,6 +383,7 @@ const GAME_DATA = {
           },
           items: {
             llave: [
+              { sfx: "unlock" },
               { removeItem: "llave" },
               { setFlag: "puertaAbierta" },
               "La llave encaja. La cerradura gira con un chirrido que espanta a la gaviota... La puerta está abierta.",
@@ -422,6 +429,7 @@ const GAME_DATA = {
     /* ================= INTERIOR DEL FARO ================= */
     interior: {
       name: "La sala de la linterna",
+      ambience: "interior",
       svg: `
         <defs>
           <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
@@ -506,6 +514,7 @@ const GAME_DATA = {
             cerillas: {
               if: { flag: "lamparaConAceite" },
               then: [
+                { sfx: "match" },
                 {
                   dialog: [
                     "Frotas la cerilla. La llama tiembla un instante...",
@@ -519,7 +528,10 @@ const GAME_DATA = {
                   },
                 },
               ],
-              else: "Enciendes una cerilla junto a la mecha seca. Se apaga sin más. Sin aceite, esto no va a arder.",
+              else: [
+                { sfx: "match" },
+                "Enciendes una cerilla junto a la mecha seca. Se apaga sin más. Sin aceite, esto no va a arder.",
+              ],
             },
           },
         },
@@ -548,8 +560,20 @@ const GAME_DATA = {
           id: "escalera",
           name: "la escalera de caracol",
           shape: { x: 55, y: 55, w: 150, h: 410 },
-          look: "Una escalera de caracol que sube hasta la galería exterior. Los peldaños crujen solo de mirarlos.",
-          use: "Subes unos peldaños, cruje TODO, y decides que lo importante está aquí abajo: la lámpara.",
+          look: {
+            if: { flag: "notaEncontrada" },
+            then: "La escalera de caracol. Ya no queda nada entre los peldaños sueltos.",
+            else: "Una escalera de caracol que sube hasta la galería. Uno de los peldaños está suelto... y parece que hay algo debajo.",
+          },
+          use: {
+            if: { flag: "notaEncontrada" },
+            then: "Subes unos peldaños, cruje TODO, y decides que lo importante está aquí abajo: la lámpara.",
+            else: [
+              { setFlag: "notaEncontrada" },
+              { addItem: "nota" },
+              "Levantas el peldaño suelto y encuentras un papel doblado. Es la letra del farero.",
+            ],
+          },
         },
         {
           id: "salida",

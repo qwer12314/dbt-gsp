@@ -12,6 +12,8 @@
       <h1 id="title">Aventura gráfica</h1>
       <span id="room-name"></span>
       <nav id="sysbtns">
+        <button id="btn-hint" title="Resaltar zonas interactivas (espacio)">✨ Pistas</button>
+        <button id="btn-mute" title="Activar o silenciar el sonido">🔊 Sonido</button>
         <button id="btn-save" title="Guardar partida">💾 Guardar</button>
         <button id="btn-load" title="Cargar partida">📂 Cargar</button>
         <button id="btn-restart" title="Empezar de nuevo">↺ Reiniciar</button>
@@ -42,6 +44,7 @@
   </main>
 
   <script src="game/game-data.js"></script>
+  <script src="game/audio.js"></script>
   <script src="game/engine.js"></script>
   <script>Engine.init(GAME_DATA);</script>
 </body>

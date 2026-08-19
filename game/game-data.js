@@ -134,48 +134,93 @@ const GAME_DATA = {
       svg: `
         <defs>
           <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#0b1030"/><stop offset="1" stop-color="#2a3a68"/>
+            <stop offset="0" stop-color="#241058"/><stop offset="1" stop-color="#5b2f9e"/>
           </linearGradient>
           <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#1d4568"/><stop offset="1" stop-color="#0e2237"/>
+            <stop offset="0" stop-color="#2f6bd0"/><stop offset="1" stop-color="#142f7a"/>
           </linearGradient>
         </defs>
         <rect width="960" height="330" fill="url(#sky)"/>
-        <g fill="#e8ecff" class="anim-twinkle"><circle cx="90" cy="60" r="2"/><circle cx="210" cy="110" r="1.5"/><circle cx="330" cy="45" r="2"/><circle cx="480" cy="90" r="1.5"/><circle cx="600" cy="40" r="2"/><circle cx="720" cy="120" r="1.5"/><circle cx="860" cy="70" r="2"/><circle cx="150" cy="160" r="1.5"/><circle cx="560" cy="150" r="1.5"/></g>
-        <circle cx="790" cy="85" r="42" fill="#f4edd8"/><circle cx="775" cy="75" r="10" fill="#e3dbc2"/><circle cx="805" cy="98" r="7" fill="#e3dbc2"/>
-        <rect y="300" width="960" height="240" fill="url(#sea)"/>
-        <g stroke="#3d6a94" stroke-width="3" opacity="0.6"><line x1="60" y1="340" x2="180" y2="340"/><line x1="420" y1="365" x2="560" y2="365"/><line x1="740" y1="345" x2="880" y2="345"/><line x1="200" y1="395" x2="330" y2="395"/></g>
-        <!-- barca -->
-        <g class="anim-sway">
-          <path d="M640 330 Q700 372 780 330 L764 302 L656 302 Z" fill="#6b4a2f"/>
-          <path d="M640 330 Q700 372 780 330 L774 318 L648 318 Z" fill="#57390f" opacity="0.55"/>
-          <rect x="706" y="240" width="6" height="66" fill="#4a3321"/>
+        <!-- estrellas de destello (4 puntas) -->
+        <g fill="#ffd23e" class="anim-twinkle">
+          <path d="M90 53 L92 58 L97 60 L92 62 L90 67 L88 62 L83 60 L88 58 Z"/>
+          <path d="M210 103 L212 108 L217 110 L212 112 L210 117 L208 112 L203 110 L208 108 Z"/>
+          <path d="M330 38 L332 43 L337 45 L332 47 L330 52 L328 47 L323 45 L328 43 Z"/>
+          <path d="M480 83 L482 88 L487 90 L482 92 L480 97 L478 92 L473 90 L478 88 Z"/>
+          <path d="M600 33 L602 38 L607 40 L602 42 L600 47 L598 42 L593 40 L598 38 Z"/>
+          <path d="M150 153 L152 158 L157 160 L152 162 L150 167 L148 162 L143 160 L148 158 Z"/>
+          <path d="M560 143 L562 148 L567 150 L562 152 L560 157 L558 152 L553 150 L558 148 Z"/>
         </g>
-        <!-- pantalán de madera -->
-        <path d="M0 420 L960 420 L960 540 L0 540 Z" fill="#5c4027"/>
-        <g stroke="#43301d" stroke-width="4"><line x1="0" y1="452" x2="960" y2="452"/><line x1="0" y1="488" x2="960" y2="488"/><line x1="120" y1="420" x2="110" y2="540"/><line x1="300" y1="420" x2="295" y2="540"/><line x1="500" y1="420" x2="500" y2="540"/><line x1="700" y1="420" x2="706" y2="540"/><line x1="880" y1="420" x2="890" y2="540"/></g>
-        <!-- farol -->
-        <rect x="70" y="180" width="10" height="245" fill="#2c2c38"/>
-        <rect x="56" y="150" width="38" height="42" rx="6" fill="#1d1d28"/>
-        <rect x="63" y="158" width="24" height="26" fill="#ffd97a"/>
-        <circle cx="75" cy="171" r="34" fill="#ffd97a" opacity="0.14" class="anim-glow"/>
-        <!-- pescador sentado -->
-        <g>
-          <circle cx="560" cy="342" r="16" fill="#d9a066"/>
-          <path d="M541 337 Q560 318 579 337 L575 328 Q560 314 545 328 Z" fill="#c9a227"/>
-          <rect x="543" y="356" width="36" height="42" rx="8" fill="#31577d"/>
-          <rect x="545" y="392" width="44" height="14" rx="6" fill="#24405c"/>
-          <line x1="578" y1="360" x2="640" y2="320" stroke="#8a6d1d" stroke-width="4"/>
-          <line x1="640" y1="320" x2="648" y2="392" stroke="#cfd6e6" stroke-width="1.5"/>
+        <!-- luna cartoon con cara dormida -->
+        <g stroke="#14092b" stroke-width="6" stroke-linejoin="round">
+          <circle cx="800" cy="88" r="48" fill="#ffe9a8"/>
+          <circle cx="783" cy="76" r="9" fill="#f0d284" stroke-width="4"/>
+          <circle cx="812" cy="108" r="6" fill="#f0d284" stroke-width="4"/>
+          <path d="M785 92 Q790 96 795 92 M805 90 Q810 94 815 90" fill="none" stroke-width="4"/>
+        </g>
+        <!-- mar con horizonte combado -->
+        <path d="M0 312 Q480 288 960 316 L960 434 L0 434 Z" fill="url(#sea)" stroke="#14092b" stroke-width="6"/>
+        <g stroke="#8fc2ff" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.8">
+          <path d="M70 352 q22 -14 44 0 q22 14 44 0"/>
+          <path d="M420 372 q22 -14 44 0 q22 14 44 0"/>
+          <path d="M760 350 q20 -12 40 0"/>
+        </g>
+        <!-- barca banana -->
+        <g class="anim-sway" stroke="#14092b" stroke-width="6" stroke-linejoin="round">
+          <path d="M700 302 Q694 258 712 236" fill="none" stroke-width="9"/>
+          <path d="M700 302 Q694 258 712 236" fill="none" stroke="#8a4a1e" stroke-width="4"/>
+          <path d="M712 236 L744 244 L714 254 Z" fill="#d43d2a" stroke-width="4"/>
+          <path d="M628 322 Q700 392 792 320 Q762 292 700 296 Q652 298 628 322 Z" fill="#c9772f"/>
+          <path d="M640 322 Q700 372 780 320" fill="none" stroke="#7a3f12" stroke-width="4"/>
+        </g>
+        <!-- pantalán combado -->
+        <path d="M0 540 L0 430 Q480 402 960 432 L960 540 Z" fill="#c9772f" stroke="#14092b" stroke-width="7"/>
+        <g stroke="#7a3f12" stroke-width="5" stroke-linecap="round" fill="none">
+          <path d="M118 424 Q112 480 106 540"/>
+          <path d="M300 416 Q297 478 293 540"/>
+          <path d="M500 412 Q501 476 502 540"/>
+          <path d="M700 416 Q705 478 710 540"/>
+          <path d="M880 424 Q888 482 894 540"/>
+          <path d="M0 462 Q480 436 960 464"/>
+          <path d="M0 502 Q480 480 960 506"/>
+        </g>
+        <!-- farol torcido como un signo de interrogación -->
+        <g stroke="#14092b" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M76 425 Q56 300 84 224 Q94 194 74 172" fill="none" stroke-width="14"/>
+          <path d="M76 425 Q56 300 84 224 Q94 194 74 172" fill="none" stroke="#3d2868" stroke-width="7"/>
+          <circle cx="75" cy="171" r="40" fill="#ffd23e" opacity="0.16" class="anim-glow" stroke="none"/>
+          <path d="M52 148 L96 152 L90 194 L58 190 Z" fill="#3d2868" stroke-width="6"/>
+          <path d="M60 156 L88 159 L84 186 L64 183 Z" fill="#ffd23e" stroke-width="4"/>
+          <path d="M50 146 Q74 132 98 150" fill="none" stroke-width="8"/>
+        </g>
+        <!-- pescador cartoon dormitando -->
+        <g stroke="#14092b" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M578 358 Q636 296 654 320" fill="none" stroke-width="7"/>
+          <path d="M578 358 Q636 296 654 320" fill="none" stroke="#8a4a1e" stroke-width="3"/>
+          <path d="M654 320 Q658 358 652 384" fill="none" stroke="#cfd6e6" stroke-width="2"/>
+          <circle cx="652" cy="388" r="7" fill="#d43d2a" stroke-width="4"/>
+          <path d="M540 362 Q560 348 584 362 Q592 392 580 404 Q558 412 546 402 Q534 386 540 362 Z" fill="#2f7a4f"/>
+          <path d="M548 400 Q544 420 552 432 M574 402 Q578 420 572 432" fill="none" stroke-width="7"/>
+          <ellipse cx="551" cy="436" rx="9" ry="5" fill="#14092b"/>
+          <ellipse cx="572" cy="436" rx="9" ry="5" fill="#14092b"/>
+          <circle cx="560" cy="338" r="17" fill="#f2b98a"/>
+          <ellipse cx="576" cy="342" rx="8" ry="6" fill="#f2a170" stroke-width="4"/>
+          <path d="M550 340 Q554 344 558 340 M562 338 Q566 342 570 338" fill="none" stroke-width="3"/>
+          <path d="M536 330 Q560 306 586 330 L582 320 Q560 300 540 320 Z" fill="#e0a93c"/>
         </g>
         <!-- cuerda en el suelo -->
         <g id="g-cuerda">
-          <circle cx="235" cy="472" r="24" fill="none" stroke="#c9a227" stroke-width="9"/>
-          <circle cx="235" cy="472" r="24" fill="none" stroke="#8a6d1d" stroke-width="3" stroke-dasharray="6 7"/>
+          <circle cx="235" cy="472" r="26" fill="none" stroke="#14092b" stroke-width="15"/>
+          <circle cx="235" cy="472" r="26" fill="none" stroke="#e0a93c" stroke-width="9"/>
+          <circle cx="235" cy="472" r="12" fill="none" stroke="#14092b" stroke-width="10"/>
+          <circle cx="235" cy="472" r="12" fill="none" stroke="#c98e2f" stroke-width="5"/>
         </g>
         <!-- salida al sendero -->
-        <path d="M900 420 L960 400 L960 540 L905 540 Z" fill="#4b5a3a"/>
-        <path d="M918 430 L952 418 M914 470 L950 460 M912 508 L948 500" stroke="#39452c" stroke-width="5"/>
+        <path d="M898 410 Q928 398 960 388 L960 540 L893 540 Z" fill="#3f7a2f" stroke="#14092b" stroke-width="6"/>
+        <g stroke="#2c5c1e" stroke-width="4" fill="none" stroke-linecap="round">
+          <path d="M916 440 q6 -10 12 0 q6 -10 12 0"/>
+          <path d="M912 490 q6 -10 12 0 q6 -10 12 0"/>
+        </g>
       `,
       hotspots: [
         {
@@ -382,50 +427,69 @@ const GAME_DATA = {
       svg: `
         <defs>
           <linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#0b1030"/><stop offset="1" stop-color="#2a3a68"/>
+            <stop offset="0" stop-color="#241058"/><stop offset="1" stop-color="#5b2f9e"/>
           </linearGradient>
         </defs>
         <rect width="960" height="540" fill="url(#sky2)"/>
-        <g fill="#e8ecff" class="anim-twinkle"><circle cx="120" cy="70" r="2"/><circle cx="260" cy="40" r="1.5"/><circle cx="420" cy="90" r="2"/><circle cx="640" cy="50" r="1.5"/><circle cx="840" cy="100" r="2"/><circle cx="500" cy="30" r="1.5"/></g>
-        <circle cx="150" cy="90" r="36" fill="#f4edd8"/><circle cx="140" cy="82" r="9" fill="#e3dbc2"/>
-        <!-- faro lejano -->
-        <g id="g-faro-lejano">
-          <path d="M880 120 L904 120 L910 210 L874 210 Z" fill="#cfd6e6"/>
-          <rect x="874" y="140" width="36" height="16" fill="#b3443c"/>
-          <rect x="874" y="176" width="36" height="16" fill="#b3443c"/>
-          <rect x="878" y="104" width="28" height="18" fill="#1d1d28"/>
-          <path d="M870 214 L914 214 L918 224 L866 224 Z" fill="#8b93a8"/>
+        <g fill="#ffd23e" class="anim-twinkle">
+          <path d="M260 33 L262 38 L267 40 L262 42 L260 47 L258 42 L253 40 L258 38 Z"/>
+          <path d="M420 83 L422 88 L427 90 L422 92 L420 97 L418 92 L413 90 L418 88 Z"/>
+          <path d="M640 43 L642 48 L647 50 L642 52 L640 57 L638 52 L633 50 L638 48 Z"/>
+          <path d="M840 93 L842 98 L847 100 L842 102 L840 107 L838 102 L833 100 L838 98 Z"/>
+          <path d="M500 23 L502 28 L507 30 L502 32 L500 37 L498 32 L493 30 L498 28 Z"/>
         </g>
-        <!-- terreno -->
-        <path d="M0 300 Q240 260 480 290 Q720 320 960 280 L960 540 L0 540 Z" fill="#3f4d31"/>
-        <path d="M0 380 Q300 350 620 380 Q800 396 960 370 L960 540 L0 540 Z" fill="#2f3a25"/>
-        <!-- camino -->
-        <path d="M80 540 Q300 430 560 400 Q760 378 940 300 L960 300 L960 320 Q770 400 580 420 Q340 448 180 540 Z" fill="#6d5b3e"/>
-        <!-- pozo -->
-        <g id="g-pozo">
-          <ellipse cx="330" cy="440" rx="80" ry="26" fill="#5a5f6e"/>
-          <ellipse cx="330" cy="432" rx="80" ry="26" fill="#7d8496"/>
-          <ellipse cx="330" cy="432" rx="52" ry="16" fill="#12141c"/>
-          <rect x="262" y="330" width="10" height="104" fill="#57390f"/>
-          <rect x="388" y="330" width="10" height="104" fill="#57390f"/>
-          <path d="M250 336 L330 296 L410 336 Z" fill="#6b4a2f"/>
-          <line x1="330" y1="336" x2="330" y2="410" stroke="#8a6d1d" stroke-width="3"/>
-          <rect x="318" y="404" width="24" height="18" rx="3" fill="#8b93a8"/>
+        <g stroke="#14092b" stroke-width="5" stroke-linejoin="round">
+          <circle cx="150" cy="88" r="38" fill="#ffe9a8"/>
+          <circle cx="138" cy="78" r="8" fill="#f0d284" stroke-width="3"/>
         </g>
-        <!-- arbusto -->
-        <g id="g-arbusto">
-          <circle cx="660" cy="470" r="46" fill="#2c5c38"/>
-          <circle cx="618" cy="486" r="34" fill="#234a2d"/>
-          <circle cx="702" cy="488" r="36" fill="#234a2d"/>
-          <circle cx="648" cy="452" r="8" fill="#3f7d4e"/>
-          <circle cx="684" cy="466" r="7" fill="#3f7d4e"/>
+        <!-- faro lejano, torcido incluso de lejos -->
+        <g id="g-faro-lejano" stroke="#14092b" stroke-width="5" stroke-linejoin="round">
+          <path d="M884 118 Q902 116 906 120 Q918 166 916 210 L872 210 Q872 162 884 118 Z" fill="#f7ead0"/>
+          <path d="M876 144 Q896 138 912 146 L913 162 Q894 154 875 160 Z" fill="#e04a33" stroke-width="4"/>
+          <path d="M874 182 Q896 176 914 184 L915 198 Q894 190 873 196 Z" fill="#e04a33" stroke-width="4"/>
+          <path d="M882 104 L910 104 L906 120 L884 120 Z" fill="#2c1b4d"/>
+          <path d="M878 98 Q896 88 912 100 Z" fill="#e04a33" stroke-width="4"/>
+          <path d="M866 214 Q894 206 920 216 L922 226 L864 226 Z" fill="#7a5a9e" stroke-width="4"/>
         </g>
-        <!-- cartel -->
-        <g id="g-cartel">
-          <rect x="132" y="330" width="10" height="90" fill="#57390f"/>
-          <rect x="92" y="308" width="92" height="40" rx="4" fill="#8a6240"/>
-          <line x1="102" y1="322" x2="174" y2="322" stroke="#43301d" stroke-width="4"/>
-          <line x1="102" y1="336" x2="160" y2="336" stroke="#43301d" stroke-width="4"/>
+        <!-- colinas onduladas -->
+        <path d="M0 302 Q240 254 480 292 Q720 328 960 276 L960 540 L0 540 Z" fill="#3f7a2f" stroke="#14092b" stroke-width="6"/>
+        <path d="M0 384 Q300 348 620 384 Q800 402 960 368 L960 540 L0 540 Z" fill="#2c5c1e" stroke="#14092b" stroke-width="6"/>
+        <!-- camino en S exagerada -->
+        <path d="M70 540 Q310 424 560 398 Q770 376 936 298 L960 296 L960 320 Q780 402 584 422 Q350 450 190 540 Z" fill="#c98e2f" stroke="#14092b" stroke-width="6"/>
+        <g stroke="#8a5a1a" stroke-width="4" fill="none" stroke-linecap="round">
+          <path d="M240 500 q14 -8 28 0"/>
+          <path d="M420 448 q14 -8 28 0"/>
+          <path d="M640 414 q12 -7 24 0"/>
+        </g>
+        <!-- pozo torcido de cuento -->
+        <g id="g-pozo" stroke="#14092b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M268 434 Q256 328 274 322" fill="none" stroke-width="11"/>
+          <path d="M268 434 Q256 328 274 322" fill="none" stroke="#8a4a1e" stroke-width="5"/>
+          <path d="M392 434 Q406 330 388 322" fill="none" stroke-width="11"/>
+          <path d="M392 434 Q406 330 388 322" fill="none" stroke="#8a4a1e" stroke-width="5"/>
+          <path d="M244 340 Q330 280 416 342 Q400 316 330 302 Q262 314 244 340 Z" fill="#a8562a"/>
+          <path d="M330 330 Q326 372 330 408" fill="none" stroke="#e0a93c" stroke-width="4" stroke-dasharray="8 6"/>
+          <path d="M314 402 Q330 396 346 402 L344 424 Q330 430 316 424 Z" fill="#7a5a9e"/>
+          <path d="M248 434 Q246 480 262 500 Q330 512 400 500 Q414 478 412 434 Z" fill="#8a68b8"/>
+          <path d="M272 462 q16 -8 32 0 M334 468 q16 -8 32 0 M300 488 q14 -7 28 0" fill="none" stroke="#5b3f7e" stroke-width="4"/>
+          <ellipse cx="330" cy="440" rx="84" ry="28" fill="#5b3f7e"/>
+          <ellipse cx="330" cy="430" rx="84" ry="28" fill="#8a68b8"/>
+          <ellipse cx="330" cy="430" rx="52" ry="17" fill="#14092b"/>
+          <path d="M262 448 q12 -10 24 0 M312 456 q12 -10 24 0 M362 448 q12 -10 24 0" fill="none" stroke="#5b3f7e" stroke-width="4"/>
+        </g>
+        <!-- arbusto nube -->
+        <g id="g-arbusto" stroke="#14092b" stroke-width="6" stroke-linejoin="round">
+          <path d="M614 500 Q596 462 628 448 Q636 420 668 428 Q700 416 712 444 Q740 456 724 490 Q712 512 680 508 Q644 516 614 500 Z" fill="#2f7a4f"/>
+          <circle cx="648" cy="454" r="7" fill="#d43d2a" stroke-width="4"/>
+          <circle cx="686" cy="468" r="6" fill="#d43d2a" stroke-width="4"/>
+          <circle cx="664" cy="486" r="6" fill="#d43d2a" stroke-width="4"/>
+        </g>
+        <!-- cartel doblado -->
+        <g id="g-cartel" stroke="#14092b" stroke-width="6" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M136 420 Q128 372 140 330" fill="none" stroke-width="11"/>
+          <path d="M136 420 Q128 372 140 330" fill="none" stroke="#8a4a1e" stroke-width="5"/>
+          <path d="M94 306 L186 314 L180 352 L90 342 Z" fill="#c9772f"/>
+          <path d="M102 320 Q140 322 172 326 M102 332 Q128 334 152 336" fill="none" stroke="#7a3f12" stroke-width="4"/>
         </g>
       `,
       hotspots: [
@@ -566,44 +630,54 @@ const GAME_DATA = {
       svg: `
         <defs>
           <linearGradient id="sky3" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#0b1030"/><stop offset="1" stop-color="#2a3a68"/>
+            <stop offset="0" stop-color="#241058"/><stop offset="1" stop-color="#5b2f9e"/>
           </linearGradient>
         </defs>
         <rect width="960" height="540" fill="url(#sky3)"/>
-        <g fill="#e8ecff" class="anim-twinkle"><circle cx="100" cy="80" r="2"/><circle cx="220" cy="140" r="1.5"/><circle cx="760" cy="60" r="2"/><circle cx="870" cy="150" r="1.5"/><circle cx="300" cy="50" r="1.5"/></g>
-        <circle cx="820" cy="90" r="40" fill="#f4edd8"/><circle cx="808" cy="80" r="10" fill="#e3dbc2"/>
-        <!-- terreno rocoso -->
-        <path d="M0 430 Q240 400 480 424 Q720 448 960 416 L960 540 L0 540 Z" fill="#3a4152"/>
-        <path d="M40 470 L110 430 L190 474 Z" fill="#2b3140"/>
-        <path d="M760 480 L830 436 L910 484 Z" fill="#2b3140"/>
-        <!-- faro -->
-        <g>
-          <path d="M400 430 L560 430 L524 120 L436 120 Z" fill="#e8ecf5"/>
-          <path d="M414 372 L546 372 L539 314 L421 314 Z" fill="#b3443c"/>
-          <path d="M427 256 L533 256 L527 200 L433 200 Z" fill="#b3443c"/>
-          <rect x="430" y="96" width="100" height="30" fill="#8b93a8"/>
-          <rect x="442" y="46" width="76" height="52" fill="#1d1d28"/>
-          <rect x="452" y="54" width="56" height="36" fill="#2e3448"/>
-          <path d="M430 46 L530 46 L480 16 Z" fill="#b3443c"/>
-          <rect x="424" y="424" width="112" height="14" fill="#8b93a8"/>
+        <g fill="#ffd23e" class="anim-twinkle">
+          <path d="M100 73 L102 78 L107 80 L102 82 L100 87 L98 82 L93 80 L98 78 Z"/>
+          <path d="M220 133 L222 138 L227 140 L222 142 L220 147 L218 142 L213 140 L218 138 Z"/>
+          <path d="M760 53 L762 58 L767 60 L762 62 L760 67 L758 62 L753 60 L758 58 Z"/>
+          <path d="M870 143 L872 148 L877 150 L872 152 L870 157 L868 152 L863 150 L868 148 Z"/>
+          <path d="M300 43 L302 48 L307 50 L302 52 L300 57 L298 52 L293 50 L298 48 Z"/>
         </g>
-        <!-- puerta -->
-        <g id="g-puerta">
-          <path d="M444 430 L516 430 L516 330 Q480 306 444 330 Z" fill="#57390f"/>
-          <path d="M452 430 L508 430 L508 335 Q480 314 452 335 Z" fill="#6b4a2f"/>
-          <line x1="480" y1="318" x2="480" y2="430" stroke="#43301d" stroke-width="4"/>
-          <circle cx="494" cy="384" r="5" fill="#c9a227"/>
-          <rect x="472" y="352" width="16" height="22" rx="3" fill="#2c2c38"/>
+        <g stroke="#14092b" stroke-width="6" stroke-linejoin="round">
+          <circle cx="828" cy="88" r="42" fill="#ffe9a8"/>
+          <circle cx="814" cy="78" r="9" fill="#f0d284" stroke-width="4"/>
         </g>
-        <!-- gaviota -->
-        <g id="g-gaviota" class="anim-bob">
-          <ellipse cx="640" cy="410" rx="20" ry="13" fill="#e8ecf5"/>
-          <circle cx="657" cy="398" r="8" fill="#e8ecf5"/>
-          <path d="M663 396 L674 399 L663 402 Z" fill="#e2a13c"/>
-          <circle cx="659" cy="396" r="1.8" fill="#12141c"/>
-          <path d="M628 406 Q618 396 624 388 Q632 398 636 402 Z" fill="#cfd6e6"/>
-          <line x1="648" y1="422" x2="648" y2="432" stroke="#e2a13c" stroke-width="3"/>
-          <line x1="638" y1="422" x2="638" y2="432" stroke="#e2a13c" stroke-width="3"/>
+        <!-- suelo rocoso púrpura -->
+        <path d="M0 432 Q240 398 480 426 Q720 452 960 414 L960 540 L0 540 Z" fill="#4a3a6e" stroke="#14092b" stroke-width="6"/>
+        <path d="M36 478 Q70 420 116 434 Q160 446 190 480 Z" fill="#352457" stroke="#14092b" stroke-width="6"/>
+        <path d="M756 484 Q800 424 856 440 Q896 452 914 488 Z" fill="#352457" stroke="#14092b" stroke-width="6"/>
+        <!-- faro panzudo e inclinado -->
+        <g stroke="#14092b" stroke-width="7" stroke-linejoin="round">
+          <path d="M398 430 Q380 280 442 122 L520 118 Q586 276 564 430 Q480 452 398 430 Z" fill="#f7ead0"/>
+          <path d="M408 376 Q480 398 552 372 Q550 340 546 318 Q478 342 414 316 Q410 344 408 376 Z" fill="#e04a33" stroke-width="6"/>
+          <path d="M424 258 Q484 280 538 254 Q535 228 531 206 Q482 226 430 204 Q426 228 424 258 Z" fill="#e04a33" stroke-width="6"/>
+          <path d="M424 122 Q480 100 536 120 L540 96 Q480 76 420 98 Z" fill="#7a5a9e" stroke-width="6"/>
+          <path d="M436 94 L524 92 L518 44 L444 46 Z" fill="#2c1b4d"/>
+          <path d="M448 86 L512 84 L508 52 L454 54 Z" fill="#3d2868" stroke-width="4"/>
+          <path d="M430 46 Q480 4 532 44 Q506 24 480 24 Q454 24 430 46 Z" fill="#e04a33"/>
+          <circle cx="481" cy="14" r="7" fill="#ffd23e" stroke-width="4"/>
+          <path d="M416 434 Q480 456 546 432 L542 418 Q480 438 420 420 Z" fill="#7a5a9e" stroke-width="5"/>
+        </g>
+        <!-- puerta enorme y torcida -->
+        <g id="g-puerta" stroke="#14092b" stroke-width="6" stroke-linejoin="round">
+          <path d="M440 432 L520 430 L518 332 Q478 300 444 334 Z" fill="#8a4a1e"/>
+          <path d="M450 428 L510 426 L508 338 Q478 312 452 340 Z" fill="#a8562a"/>
+          <path d="M479 320 Q480 372 480 426" fill="none" stroke="#7a3f12" stroke-width="4"/>
+          <circle cx="496" cy="384" r="7" fill="#ffd23e" stroke-width="4"/>
+          <path d="M462 350 L482 348 L481 376 L462 378 Z" fill="#2c1b4d" stroke-width="4"/>
+          <path d="M452 356 q-8 4 0 10 M452 396 q-8 4 0 10" fill="none" stroke-width="4"/>
+        </g>
+        <!-- gaviota cartoon -->
+        <g id="g-gaviota" class="anim-bob" stroke="#14092b" stroke-width="4" stroke-linejoin="round">
+          <path d="M622 416 Q638 394 662 404 Q674 410 668 420 Q646 428 622 416 Z" fill="#f3ecff"/>
+          <circle cx="662" cy="396" r="10" fill="#f3ecff"/>
+          <path d="M670 393 L688 397 L670 402 Z" fill="#ffb52e"/>
+          <circle cx="662" cy="393" r="3.4" fill="#fff"/>
+          <circle cx="663" cy="393" r="1.6" fill="#14092b" stroke="none"/>
+          <path d="M646 424 Q645 432 644 436 M656 424 Q657 432 658 436" fill="none" stroke="#ffb52e" stroke-width="4"/>
         </g>
       `,
       variants: [
@@ -611,12 +685,12 @@ const GAME_DATA = {
           if: { flag: "faroEncendido" },
           svg: `
             <g>
-              <polygon points="518,60 960,10 960,150 528,92" fill="#ffd97a" opacity="0.16"/>
-              <rect x="452" y="54" width="56" height="36" fill="#ffd97a"/>
-              <circle cx="480" cy="72" r="46" fill="#ffd97a" opacity="0.25" class="anim-glow"/>
+              <path d="M516 56 Q740 -6 960 8 L960 150 Q740 140 528 94 Z" fill="#ffd23e" opacity="0.22"/>
+              <path d="M452 86 L512 84 L508 52 L454 54 Z" fill="#ffd23e" stroke="#14092b" stroke-width="4"/>
+              <circle cx="480" cy="70" r="52" fill="#ffd23e" opacity="0.28" class="anim-glow"/>
             </g>
-            <path d="M870 490 Q910 500 960 480 L960 540 L880 540 Z" fill="#5a5244"/>
-            <path d="M888 500 L930 494 M894 520 L940 512" stroke="#43301d" stroke-width="4"/>
+            <path d="M866 486 Q908 500 960 478 L960 540 L876 540 Z" fill="#8a68b8" stroke="#14092b" stroke-width="6"/>
+            <path d="M886 500 Q912 496 934 492 M892 520 Q918 516 942 510" stroke="#5b3f7e" stroke-width="5" fill="none" stroke-linecap="round"/>
           `,
         },
       ],
@@ -750,70 +824,80 @@ const GAME_DATA = {
       svg: `
         <defs>
           <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#2e3448"/><stop offset="1" stop-color="#1c2030"/>
+            <stop offset="0" stop-color="#4a2d73"/><stop offset="1" stop-color="#2c1b4d"/>
           </linearGradient>
         </defs>
         <rect width="960" height="540" fill="url(#wall)"/>
-        <!-- piedras de la pared -->
-        <g stroke="#232838" stroke-width="3" fill="none" opacity="0.8">
-          <line x1="0" y1="120" x2="960" y2="120"/><line x1="0" y1="240" x2="960" y2="240"/><line x1="0" y1="360" x2="960" y2="360"/>
-          <line x1="160" y1="0" x2="160" y2="120"/><line x1="480" y1="0" x2="480" y2="120"/><line x1="800" y1="0" x2="800" y2="120"/>
-          <line x1="320" y1="120" x2="320" y2="240"/><line x1="640" y1="120" x2="640" y2="240"/>
-          <line x1="200" y1="240" x2="200" y2="360"/><line x1="760" y1="240" x2="760" y2="360"/>
+        <!-- sillares combados -->
+        <g stroke="#14092b" stroke-width="4" fill="none" opacity="0.75" stroke-linecap="round">
+          <path d="M0 118 Q480 132 960 114"/>
+          <path d="M0 238 Q480 224 960 242"/>
+          <path d="M0 358 Q480 372 960 352"/>
+          <path d="M160 0 Q168 60 158 118 M480 0 Q472 60 482 124 M800 0 Q810 58 798 116"/>
+          <path d="M320 126 Q312 180 322 234 M640 122 Q650 178 638 232"/>
+          <path d="M200 240 Q208 300 198 356 M760 236 Q750 298 762 360"/>
         </g>
-        <rect y="460" width="960" height="80" fill="#43301d"/>
-        <g stroke="#332413" stroke-width="4"><line x1="0" y1="486" x2="960" y2="486"/><line x1="0" y1="514" x2="960" y2="514"/></g>
-        <!-- ventana -->
-        <g id="g-ventana">
-          <path d="M700 150 a56 56 0 0 1 112 0 l0 110 l-112 0 Z" fill="#0b1030"/>
-          <path d="M708 152 a48 48 0 0 1 96 0 l0 100 l-96 0 Z" fill="#16233f"/>
-          <line x1="756" y1="104" x2="756" y2="252" stroke="#43301d" stroke-width="6"/>
-          <line x1="708" y1="180" x2="804" y2="180" stroke="#43301d" stroke-width="6"/>
-          <circle cx="726" cy="136" r="2" fill="#e8ecff"/><circle cx="782" cy="150" r="1.5" fill="#e8ecff"/>
+        <!-- suelo mostaza combado -->
+        <path d="M0 452 Q480 476 960 448 L960 540 L0 540 Z" fill="#c98e2f" stroke="#14092b" stroke-width="6"/>
+        <g stroke="#8a5a1a" stroke-width="4" fill="none" stroke-linecap="round">
+          <path d="M0 488 Q480 508 960 484"/>
+          <path d="M0 518 Q480 532 960 514"/>
         </g>
-        <!-- escalera de caracol -->
-        <g id="g-escalera">
-          <path d="M60 460 L200 460 L200 60 L60 60 Z" fill="#171b28"/>
-          <g fill="#57390f">
-            <path d="M70 440 L190 440 L190 420 L70 428 Z"/>
-            <path d="M85 392 L190 384 L190 364 L85 376 Z"/>
-            <path d="M70 340 L175 332 L175 312 L70 324 Z"/>
-            <path d="M85 288 L190 280 L190 260 L85 272 Z"/>
-            <path d="M70 236 L175 228 L175 208 L70 220 Z"/>
-            <path d="M85 184 L190 176 L190 156 L85 168 Z"/>
-            <path d="M70 132 L175 124 L175 104 L70 116 Z"/>
+        <!-- ventana de ojo de cerradura -->
+        <g id="g-ventana" stroke="#14092b" stroke-width="6" stroke-linejoin="round">
+          <path d="M696 152 Q702 96 756 94 Q812 96 816 154 Q820 210 812 262 L700 260 Q694 206 696 152 Z" fill="#8a4a1e"/>
+          <path d="M706 154 Q712 106 756 104 Q802 106 806 156 Q809 206 803 252 L709 250 Q703 202 706 154 Z" fill="#241058"/>
+          <path d="M756 104 Q752 178 756 250 M706 178 Q756 188 806 178" fill="none" stroke="#8a4a1e" stroke-width="6"/>
+          <path d="M726 130 L728 135 L733 137 L728 139 L726 144 L724 139 L719 137 L724 135 Z" fill="#ffd23e" stroke="none"/>
+          <path d="M782 146 L784 151 L789 153 L784 155 L782 160 L780 155 L775 153 L780 151 Z" fill="#ffd23e" stroke="none"/>
+        </g>
+        <!-- escalera de caracol vertiginosa -->
+        <g id="g-escalera" stroke="#14092b" stroke-width="5" stroke-linejoin="round">
+          <path d="M58 460 Q52 260 66 60 L198 62 Q208 262 202 460 Z" fill="#241058"/>
+          <g fill="#a8562a">
+            <path d="M66 442 Q130 452 194 438 L192 416 Q130 430 68 420 Z"/>
+            <path d="M84 390 Q140 398 196 384 L194 362 Q140 376 86 368 Z"/>
+            <path d="M66 336 Q124 344 180 330 L178 310 Q124 322 68 314 Z"/>
+            <path d="M84 284 Q140 292 196 278 L194 258 Q140 270 86 262 Z"/>
+            <path d="M66 232 Q124 240 180 226 L178 206 Q124 218 68 210 Z"/>
+            <path d="M84 180 Q140 188 196 174 L194 154 Q140 166 86 158 Z"/>
+            <path d="M66 128 Q124 136 180 122 L178 102 Q124 114 68 106 Z"/>
           </g>
-          <line x1="130" y1="60" x2="130" y2="460" stroke="#2c2c38" stroke-width="10"/>
+          <path d="M132 62 Q124 260 132 458" fill="none" stroke-width="12"/>
+          <path d="M132 62 Q124 260 132 458" fill="none" stroke="#5b3f7e" stroke-width="6"/>
         </g>
-        <!-- lámpara del faro -->
-        <g id="g-lampara">
-          <rect x="420" y="380" width="160" height="80" rx="8" fill="#3a4152"/>
-          <rect x="436" y="396" width="128" height="48" rx="6" fill="#2b3140"/>
-          <circle cx="500" cy="420" r="14" fill="#12141c"/>
-          <path d="M448 380 L552 380 L536 300 L464 300 Z" fill="#8b93a8"/>
-          <circle cx="500" cy="252" r="56" fill="#1d1d28"/>
-          <circle cx="500" cy="252" r="44" fill="#2e3448"/>
-          <circle cx="500" cy="252" r="20" fill="#12141c"/>
-          <path d="M470 226 Q500 200 530 226" stroke="#8b93a8" stroke-width="5" fill="none"/>
+        <!-- gran lámpara de latón -->
+        <g id="g-lampara" stroke="#14092b" stroke-width="6" stroke-linejoin="round">
+          <path d="M414 384 Q500 366 586 382 Q592 428 582 458 Q500 476 420 460 Q408 424 414 384 Z" fill="#7a5a9e"/>
+          <path d="M438 400 Q500 388 562 398 L558 444 Q500 454 442 446 Z" fill="#3d2868" stroke-width="5"/>
+          <circle cx="500" cy="422" r="15" fill="#14092b"/>
+          <circle cx="500" cy="422" r="6" fill="#ffb52e" stroke-width="3"/>
+          <path d="M452 384 Q446 330 466 300 L534 298 Q556 330 548 382 Q500 394 452 384 Z" fill="#e0a93c"/>
+          <path d="M470 336 Q500 328 530 334" fill="none" stroke="#8a5a1a" stroke-width="4"/>
+          <circle cx="500" cy="250" r="60" fill="#e0a93c"/>
+          <circle cx="500" cy="250" r="45" fill="#2c1b4d"/>
+          <circle cx="500" cy="250" r="20" fill="#14092b"/>
+          <path d="M464 216 Q500 186 536 216" fill="none" stroke="#e0a93c" stroke-width="7"/>
+          <path d="M500 190 Q498 172 508 164" fill="none" stroke-width="7"/>
+          <circle cx="512" cy="160" r="7" fill="#e0a93c" stroke-width="4"/>
         </g>
-        <!-- alacena -->
-        <g id="g-alacena">
-          <rect x="640" y="330" width="130" height="130" rx="6" fill="#57390f"/>
-          <rect x="648" y="338" width="55" height="114" fill="#6b4a2f"/>
-          <rect x="707" y="338" width="55" height="114" fill="#6b4a2f"/>
-          <circle cx="698" cy="396" r="4" fill="#c9a227"/>
-          <circle cx="712" cy="396" r="4" fill="#c9a227"/>
-          <line x1="648" y1="376" x2="703" y2="376" stroke="#43301d" stroke-width="3"/>
-          <line x1="707" y1="376" x2="762" y2="376" stroke="#43301d" stroke-width="3"/>
+        <!-- alacena ladeada -->
+        <g id="g-alacena" stroke="#14092b" stroke-width="6" stroke-linejoin="round">
+          <path d="M636 334 L774 324 L778 458 L644 464 Z" fill="#8a4a1e"/>
+          <path d="M648 342 L700 338 L704 452 L652 455 Z" fill="#a8562a"/>
+          <path d="M710 338 L764 334 L768 450 L714 452 Z" fill="#a8562a"/>
+          <circle cx="702" cy="396" r="5" fill="#ffd23e" stroke-width="4"/>
+          <circle cx="716" cy="395" r="5" fill="#ffd23e" stroke-width="4"/>
+          <path d="M652 378 Q676 374 700 376 M714 375 Q740 372 764 374" fill="none" stroke="#7a3f12" stroke-width="4"/>
         </g>
       `,
       variants: [
         {
           if: { flag: "faroEncendido" },
           svg: `
-            <circle cx="500" cy="252" r="20" fill="#ffd97a"/>
-            <circle cx="500" cy="252" r="60" fill="#ffd97a" opacity="0.2" class="anim-glow"/>
-            <circle cx="500" cy="252" r="120" fill="#ffd97a" opacity="0.07"/>
+            <circle cx="500" cy="250" r="20" fill="#ffd23e" stroke="#14092b" stroke-width="4"/>
+            <circle cx="500" cy="250" r="64" fill="#ffd23e" opacity="0.25" class="anim-glow"/>
+            <circle cx="500" cy="250" r="130" fill="#ffd23e" opacity="0.08"/>
           `,
         },
       ],
@@ -1007,46 +1091,78 @@ const GAME_DATA = {
       svg: `
         <defs>
           <linearGradient id="sky4" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#0b1030"/><stop offset="1" stop-color="#233158"/>
+            <stop offset="0" stop-color="#1c1033"/><stop offset="1" stop-color="#3f1f5c"/>
           </linearGradient>
           <linearGradient id="sea4" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#1d4568"/><stop offset="1" stop-color="#0e2237"/>
+            <stop offset="0" stop-color="#2c7a3f"/><stop offset="1" stop-color="#123a26"/>
           </linearGradient>
         </defs>
         <rect width="960" height="540" fill="url(#sky4)"/>
-        <g fill="#e8ecff" class="anim-twinkle"><circle cx="150" cy="60" r="2"/><circle cx="320" cy="100" r="1.5"/><circle cx="540" cy="40" r="2"/><circle cx="700" cy="90" r="1.5"/><circle cx="240" cy="150" r="1.5"/></g>
-        <!-- haz del faro cruzando el cielo -->
-        <polygon points="0,0 120,0 430,130 330,165" fill="#ffd97a" opacity="0.20"/>
-        <polygon points="20,0 95,0 395,135 350,152" fill="#ffe9b0" opacity="0.12"/>
-        <!-- mar -->
-        <rect y="330" width="960" height="120" fill="url(#sea4)"/>
-        <g stroke="#3d6a94" stroke-width="3" opacity="0.6"><line x1="80" y1="360" x2="220" y2="360"/><line x1="380" y1="390" x2="520" y2="390"/><line x1="120" y1="410" x2="240" y2="410"/></g>
-        <!-- playa de guijarros -->
-        <path d="M0 440 Q240 410 520 430 Q760 448 960 420 L960 540 L0 540 Z" fill="#4a4438"/>
-        <g fill="#3a352c"><ellipse cx="150" cy="490" rx="14" ry="6"/><ellipse cx="260" cy="510" rx="10" ry="5"/><ellipse cx="420" cy="480" rx="16" ry="7"/><ellipse cx="560" cy="512" rx="12" ry="5"/><ellipse cx="330" cy="465" rx="9" ry="4"/><ellipse cx="640" cy="470" rx="11" ry="5"/></g>
-        <!-- acantilado con boca de cueva -->
-        <path d="M700 540 L700 240 Q760 180 850 200 L960 170 L960 540 Z" fill="#2b3140"/>
-        <path d="M740 540 L750 380 Q790 330 840 360 L850 540 Z" fill="#12141c"/>
-        <path d="M746 540 L756 390 Q790 345 834 372 L842 540 Z" fill="#0a0c14"/>
-        <!-- algas -->
-        <g id="g-algas" stroke="#2c5c38" stroke-width="5" fill="none">
-          <path d="M180 452 Q174 432 182 416"/>
-          <path d="M196 454 Q204 434 198 420"/>
-          <path d="M210 450 Q206 436 212 424"/>
+        <g fill="#8ef26f" class="anim-twinkle">
+          <path d="M150 53 L152 58 L157 60 L152 62 L150 67 L148 62 L143 60 L148 58 Z"/>
+          <path d="M320 93 L322 98 L327 100 L322 102 L320 107 L318 102 L313 100 L318 98 Z"/>
+          <path d="M540 33 L542 38 L547 40 L542 42 L540 47 L538 42 L533 40 L538 38 Z"/>
+          <path d="M700 83 L702 88 L707 90 L702 92 L700 97 L698 92 L693 90 L698 88 Z"/>
+          <path d="M240 143 L242 148 L247 150 L242 152 L240 157 L238 152 L233 150 L238 148 Z"/>
         </g>
-        <!-- cangrejo con algo brillante -->
-        <g id="g-cangrejo">
-          <ellipse cx="480" cy="500" rx="22" ry="14" fill="#c25542"/>
-          <circle cx="472" cy="488" r="4" fill="#12141c"/>
-          <circle cx="488" cy="488" r="4" fill="#12141c"/>
-          <path d="M458 496 Q444 486 448 474 L456 480 Q452 488 462 492 Z" fill="#a8402f"/>
-          <path d="M502 496 Q516 486 512 474 L504 480 Q508 488 498 492 Z" fill="#a8402f"/>
-          <g stroke="#a8402f" stroke-width="4"><line x1="462" y1="510" x2="450" y2="518"/><line x1="470" y1="513" x2="462" y2="522"/><line x1="490" y1="513" x2="498" y2="522"/><line x1="498" y1="510" x2="510" y2="518"/></g>
-          <path d="M506 476 Q516 468 526 474 L524 480 Q516 476 510 482 Z" fill="#e8ecf5"/>
+        <!-- haz del faro cruzando el cielo -->
+        <path d="M0 0 L128 0 Q300 60 434 128 L330 168 Q160 90 0 24 Z" fill="#ffd23e" opacity="0.22"/>
+        <!-- mar verdoso, extrañamente en calma -->
+        <path d="M0 334 Q340 320 680 338 L680 434 L0 434 Z" fill="url(#sea4)" stroke="#14092b" stroke-width="6"/>
+        <g stroke="#8ef26f" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.7">
+          <path d="M90 362 q20 -12 40 0 q20 12 40 0"/>
+          <path d="M390 392 q20 -12 40 0"/>
+          <path d="M140 412 q18 -10 36 0"/>
+        </g>
+        <!-- playa de guijarros -->
+        <path d="M0 438 Q240 408 520 430 Q760 450 960 418 L960 540 L0 540 Z" fill="#5b4a7e" stroke="#14092b" stroke-width="6"/>
+        <g fill="#463763" stroke="#14092b" stroke-width="3">
+          <ellipse cx="150" cy="490" rx="16" ry="7"/><ellipse cx="260" cy="510" rx="12" ry="6"/>
+          <ellipse cx="420" cy="480" rx="18" ry="8"/><ellipse cx="560" cy="512" rx="14" ry="6"/>
+          <ellipse cx="330" cy="465" rx="10" ry="5"/><ellipse cx="640" cy="470" rx="13" ry="6"/>
+        </g>
+        <!-- acantilado púrpura con boca de cueva -->
+        <path d="M700 540 L702 244 Q756 172 852 198 L960 166 L960 540 Z" fill="#5b2f7e" stroke="#14092b" stroke-width="7"/>
+        <g stroke="#3f1f5c" stroke-width="5" fill="none" stroke-linecap="round">
+          <path d="M726 300 Q790 280 860 292"/>
+          <path d="M714 400 Q780 384 852 396"/>
+          <path d="M880 240 Q920 232 958 240"/>
+        </g>
+        <path d="M736 540 Q740 420 754 378 Q792 322 838 362 Q852 420 852 540 Z" fill="#14092b" stroke="#14092b" stroke-width="6"/>
+        <path d="M748 540 Q752 428 762 392 Q792 348 828 380 Q840 430 840 540 Z" fill="#060309"/>
+        <path d="M770 384 q8 14 0 26 M800 372 q10 12 4 26" stroke="#8ef26f" stroke-width="3" fill="none" opacity="0.5"/>
+        <!-- algas rizadas -->
+        <g id="g-algas" stroke="#14092b" stroke-width="8" fill="none" stroke-linecap="round">
+          <path d="M180 454 Q166 430 184 412"/>
+          <path d="M198 456 Q212 430 198 414"/>
+          <path d="M214 452 Q204 434 216 420"/>
+        </g>
+        <g stroke="#52d053" stroke-width="4" fill="none" stroke-linecap="round">
+          <path d="M180 454 Q166 430 184 412"/>
+          <path d="M198 456 Q212 430 198 414"/>
+          <path d="M214 452 Q204 434 216 420"/>
+        </g>
+        <!-- cangrejo cartoon con ojos de tallo -->
+        <g id="g-cangrejo" stroke="#14092b" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M470 470 Q470 456 466 450 M494 470 Q494 456 498 450" fill="none" stroke-width="5"/>
+          <circle cx="465" cy="446" r="7" fill="#fff"/>
+          <circle cx="499" cy="446" r="7" fill="#fff"/>
+          <circle cx="466" cy="447" r="3" fill="#14092b" stroke="none"/>
+          <circle cx="498" cy="447" r="3" fill="#14092b" stroke="none"/>
+          <ellipse cx="482" cy="496" rx="28" ry="18" fill="#e04a33"/>
+          <path d="M470 500 Q482 508 494 500" fill="none" stroke-width="4"/>
+          <path d="M450 490 Q426 480 430 458 Q444 462 448 472 Q436 468 444 484 Z" fill="#c22f1d"/>
+          <path d="M514 490 Q538 480 534 458 Q520 462 516 472 Q528 468 520 484 Z" fill="#c22f1d"/>
+          <path d="M462 512 Q452 520 446 528 M474 516 Q468 524 464 532 M492 516 Q498 524 502 532 M504 512 Q514 520 520 528" fill="none" stroke-width="5"/>
+          <path d="M508 474 Q520 464 532 470 L529 479 Q519 474 512 481 Z" fill="#f3ecff" stroke-width="4"/>
         </g>
         <!-- escalones tallados de vuelta al faro -->
-        <path d="M0 415 L95 438 L95 540 L0 540 Z" fill="#3a4152"/>
-        <g stroke="#4a5266" stroke-width="5"><line x1="8" y1="450" x2="74" y2="462"/><line x1="6" y1="478" x2="80" y2="488"/><line x1="4" y1="506" x2="84" y2="514"/></g>
+        <path d="M0 412 Q50 424 96 438 L96 540 L0 540 Z" fill="#8a68b8" stroke="#14092b" stroke-width="6"/>
+        <g stroke="#5b3f7e" stroke-width="5" fill="none" stroke-linecap="round">
+          <path d="M8 450 Q42 452 76 462"/>
+          <path d="M6 478 Q44 482 82 490"/>
+          <path d="M4 506 Q46 510 86 516"/>
+        </g>
       `,
       hotspots: [
         {
@@ -1191,55 +1307,77 @@ const GAME_DATA = {
         fromPlaya: { x: 130, y: 480 },
       },
       svg: `
-        <rect width="960" height="540" fill="#0a0d16"/>
-        <!-- paredes de roca -->
-        <path d="M0 0 L960 0 L960 120 Q800 60 640 110 Q400 160 200 100 Q80 70 0 130 Z" fill="#161b2a"/>
-        <path d="M0 130 Q120 90 220 140 L200 540 L0 540 Z" fill="#1a2030"/>
-        <path d="M960 120 L960 540 L780 540 Q810 300 880 190 Z" fill="#1a2030"/>
-        <!-- estalactitas -->
-        <g id="g-estalactitas" fill="#232a3e">
-          <path d="M300 60 L322 60 L311 150 Z"/>
-          <path d="M420 40 L448 40 L434 170 Z"/>
-          <path d="M560 55 L580 55 L570 130 Z"/>
-          <path d="M660 70 L686 70 L673 190 Z"/>
+        <rect width="960" height="540" fill="#160b26"/>
+        <!-- paredes de roca púrpura -->
+        <path d="M0 0 L960 0 L960 118 Q800 56 640 108 Q400 158 200 98 Q80 68 0 128 Z" fill="#3f1f5c" stroke="#14092b" stroke-width="6"/>
+        <path d="M0 128 Q120 88 224 138 Q214 340 200 540 L0 540 Z" fill="#4a2d73" stroke="#14092b" stroke-width="6"/>
+        <path d="M960 118 L960 540 L780 540 Q806 300 882 188 Z" fill="#4a2d73" stroke="#14092b" stroke-width="6"/>
+        <!-- cristales mágicos -->
+        <g stroke="#14092b" stroke-width="4" stroke-linejoin="round">
+          <path d="M120 300 L136 268 L152 302 L136 316 Z" fill="#d84fd8"/>
+          <path d="M856 320 L872 284 L888 322 L872 338 Z" fill="#d84fd8"/>
+        </g>
+        <!-- estalactitas chorreantes -->
+        <g id="g-estalactitas" stroke="#14092b" stroke-width="5" stroke-linejoin="round">
+          <path d="M296 56 L326 58 Q322 110 311 152 Q302 108 296 56 Z" fill="#5b2f7e"/>
+          <path d="M416 36 L452 38 Q446 116 434 172 Q422 112 416 36 Z" fill="#5b2f7e"/>
+          <path d="M556 50 L584 52 Q580 98 570 132 Q562 96 556 50 Z" fill="#5b2f7e"/>
+          <path d="M656 66 L690 68 Q684 140 673 192 Q662 136 656 66 Z" fill="#5b2f7e"/>
+          <circle cx="434" cy="184" r="5" fill="#8ef26f" stroke-width="3" class="anim-bob"/>
         </g>
         <!-- suelo -->
-        <path d="M0 460 Q240 430 480 450 Q720 470 960 440 L960 540 L0 540 Z" fill="#20263a"/>
-        <!-- poza luminosa -->
+        <path d="M0 458 Q240 428 480 448 Q720 470 960 438 L960 540 L0 540 Z" fill="#2c1b4d" stroke="#14092b" stroke-width="6"/>
+        <!-- poza verde neón -->
         <g id="g-poza">
-          <ellipse cx="430" cy="430" rx="190" ry="46" fill="#123c3f"/>
-          <ellipse cx="430" cy="424" rx="170" ry="38" fill="#1c6e6a"/>
-          <ellipse cx="430" cy="421" rx="120" ry="26" fill="#2fd4c8" opacity="0.55" class="anim-glow"/>
-          <ellipse cx="430" cy="420" rx="60" ry="13" fill="#7ef0e4" opacity="0.5"/>
-          <circle cx="430" cy="380" r="130" fill="#2fd4c8" opacity="0.06"/>
+          <ellipse cx="430" cy="430" rx="194" ry="48" fill="#123a26" stroke="#14092b" stroke-width="6"/>
+          <ellipse cx="430" cy="423" rx="172" ry="39" fill="#2c7a3f"/>
+          <ellipse cx="430" cy="420" rx="122" ry="27" fill="#52d053" opacity="0.6" class="anim-glow"/>
+          <ellipse cx="430" cy="419" rx="62" ry="14" fill="#8ef26f" opacity="0.6"/>
+          <path d="M300 428 q16 -8 32 0 M500 434 q16 -8 32 0" stroke="#8ef26f" stroke-width="3" fill="none" opacity="0.7"/>
+          <circle cx="430" cy="380" r="140" fill="#52d053" opacity="0.07"/>
         </g>
-        <!-- roca de la sirena -->
-        <path d="M360 430 Q400 380 470 400 Q500 412 490 434 Q420 448 360 430 Z" fill="#2b3140"/>
-        <!-- sirena -->
-        <g id="g-sirena" class="anim-bob">
-          <path d="M430 402 Q470 396 496 416 Q510 428 498 434 Q470 424 444 420 Z" fill="#1c8f84"/>
-          <path d="M496 416 Q516 404 522 390 Q524 408 510 422 Z" fill="#2fd4c8"/>
-          <path d="M418 366 Q430 356 442 366 L440 402 Q430 408 420 402 Z" fill="#d9a066"/>
-          <circle cx="430" cy="348" r="13" fill="#d9a066"/>
-          <path d="M416 340 Q410 380 422 408 L408 406 Q398 370 408 340 Z" fill="#16655c"/>
-          <path d="M444 340 Q452 378 438 408 L452 406 Q462 368 452 340 Z" fill="#16655c"/>
-          <path d="M415 342 Q430 324 445 342 Q438 332 430 332 Q422 332 415 342 Z" fill="#16655c"/>
-          <path d="M412 348 Q408 376 416 398" stroke="#2fd4c8" stroke-width="2" fill="none" opacity="0.6"/>
-          <path d="M448 348 Q452 374 444 398" stroke="#2fd4c8" stroke-width="2" fill="none" opacity="0.6"/>
+        <!-- roca seta de la sirena -->
+        <path d="M352 434 Q368 386 430 392 Q486 396 494 432 Q430 450 352 434 Z" fill="#5b3f7e" stroke="#14092b" stroke-width="6"/>
+        <!-- sirena cartoon -->
+        <g id="g-sirena" class="anim-bob" stroke="#14092b" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M428 318 Q394 324 390 358 Q386 394 402 416 Q418 424 421 412 Q410 380 415 352 Q419 334 432 330 Z" fill="#d84fd8"/>
+          <path d="M432 400 Q470 390 496 408 Q516 422 502 432 Q468 424 440 420 Z" fill="#1c8f84"/>
+          <path d="M496 408 Q522 392 528 374 Q536 400 514 420 Q504 426 494 420 Z" fill="#2fd4c8"/>
+          <path d="M420 364 Q430 356 440 364 L438 402 Q429 408 421 402 Z" fill="#f2b98a"/>
+          <path d="M419 368 Q430 374 441 368 L440 379 Q430 384 420 379 Z" fill="#d84fd8" stroke-width="4"/>
+          <path d="M438 368 Q454 360 454 346" fill="none" stroke-width="6"/>
+          <circle cx="454" cy="344" r="5" fill="#f2b98a" stroke-width="4"/>
+          <circle cx="430" cy="342" r="16" fill="#f2b98a"/>
+          <path d="M446 334 Q458 344 454 366 Q452 378 444 386 Q450 366 443 352 Z" fill="#d84fd8" stroke-width="4"/>
+          <path d="M413 336 Q417 318 434 318 Q451 320 447 336 Q442 326 431 326 Q419 326 413 336 Z" fill="#d84fd8" stroke-width="4"/>
+          <circle cx="425" cy="342" r="4.5" fill="#fff"/>
+          <circle cx="437" cy="342" r="4" fill="#fff"/>
+          <circle cx="426" cy="343" r="2" fill="#14092b" stroke="none"/>
+          <circle cx="438" cy="343" r="1.8" fill="#14092b" stroke="none"/>
+          <path d="M425 353 Q431 357 437 353" fill="none" stroke-width="3"/>
         </g>
-        <!-- farero en trance -->
-        <g id="g-farero" class="anim-bob">
-          <circle cx="700" cy="360" r="13" fill="#d9a066"/>
-          <path d="M687 352 Q700 340 713 352 L713 358 L687 358 Z" fill="#31577d"/>
-          <path d="M692 372 Q700 380 708 372 L708 386 Q700 392 692 386 Z" fill="#cfd6e6"/>
-          <rect x="685" y="372" width="30" height="46" rx="6" fill="#3a4152"/>
-          <rect x="688" y="416" width="10" height="34" fill="#24405c"/>
-          <rect x="702" y="416" width="10" height="34" fill="#2c4d6e"/>
-          <line x1="689" y1="380" x2="680" y2="404" stroke="#3a4152" stroke-width="6"/>
-          <line x1="711" y1="380" x2="720" y2="404" stroke="#3a4152" stroke-width="6"/>
+        <!-- farero hipnotizado, ojos en espiral -->
+        <g id="g-farero" class="anim-bob" stroke="#14092b" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+          <path d="M688 424 Q686 440 687 452 M712 424 Q714 440 713 452" fill="none" stroke-width="8"/>
+          <ellipse cx="683" cy="455" rx="11" ry="5.5" fill="#14092b"/>
+          <ellipse cx="717" cy="455" rx="11" ry="5.5" fill="#14092b"/>
+          <path d="M680 374 Q700 362 720 374 Q734 400 722 426 Q700 436 678 426 Q666 400 680 374 Z" fill="#2456a8"/>
+          <circle cx="700" cy="394" r="3" fill="#ffd23e" stroke="none"/>
+          <circle cx="700" cy="408" r="3" fill="#ffd23e" stroke="none"/>
+          <path d="M678 382 Q664 398 669 416" fill="none" stroke-width="7"/>
+          <path d="M722 382 Q736 398 731 416" fill="none" stroke-width="7"/>
+          <circle cx="669" cy="419" r="5.5" fill="#f2b98a" stroke-width="4"/>
+          <circle cx="731" cy="419" r="5.5" fill="#f2b98a" stroke-width="4"/>
+          <circle cx="700" cy="348" r="19" fill="#f2b98a"/>
+          <path d="M683 355 Q684 382 700 384 Q716 382 717 355 Q710 367 700 367 Q690 367 683 355 Z" fill="#f3ecff" stroke-width="4"/>
+          <path d="M686 341 a5.5 5.5 0 1 1 8 5.5 a3.2 3.2 0 1 0 -4 -4" fill="none" stroke-width="3"/>
+          <path d="M704 341 a5.5 5.5 0 1 1 8 5.5 a3.2 3.2 0 1 0 -4 -4" fill="none" stroke-width="3"/>
+          <path d="M680 334 Q700 320 720 334 L717 325 Q700 315 683 325 Z" fill="#2456a8"/>
+          <path d="M740 326 q5 -16 -1 -24 m1 26 l11 -6 m-12 -18 a4 4 0 1 1 -1 8" fill="none" stroke="#8ef26f" stroke-width="4"/>
+          <path d="M658 310 q-5 -16 1 -24 m-1 26 l-11 -6 m12 -20 a4 4 0 1 0 1 8" fill="none" stroke="#8ef26f" stroke-width="4"/>
         </g>
         <!-- luz cálida de la entrada -->
-        <circle cx="110" cy="470" r="80" fill="#ffd97a" opacity="0.08"/>
+        <circle cx="110" cy="470" r="86" fill="#ffd23e" opacity="0.10"/>
       `,
       hotspots: [
         {

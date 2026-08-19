@@ -40,6 +40,7 @@ const Engine = (() => {
       useWith: (i, h) => `Usar ${i} con ${h}`,
       useWithDots: (i) => `Usar ${i} con...`,
       hints: "✨ Pistas",
+      pixel: "🖼 Píxel",
       soundOn: "🔊 Sonido",
       soundOff: "🔇 Sonido",
       music: "🎵 Música",
@@ -59,6 +60,7 @@ const Engine = (() => {
       useWith: (i, h) => `Use ${i} with ${h}`,
       useWithDots: (i) => `Use ${i} with...`,
       hints: "✨ Hints",
+      pixel: "🖼 Pixel",
       soundOn: "🔊 Sound",
       soundOff: "🔇 Sound",
       music: "🎵 Music",
@@ -347,19 +349,41 @@ const Engine = (() => {
 
   // ---------- Personaje ----------
 
-  // Sprite vectorial de reserva (si no hay gráficos horneados)
+  // Personaje cartoon estilo DOTT: cabezón, narizota, extremidades
+  // finas y zapatones. Contorno grueso ciruela, como los fondos.
   const PLAYER_SVG = `
     <g class="pj">
-      <ellipse cx="0" cy="0" rx="16" ry="4" fill="#000" opacity="0.25"/>
-      <g class="leg-l"><rect x="-9" y="-36" width="8" height="36" rx="3" fill="#24405c"/></g>
-      <g class="leg-r"><rect x="1" y="-36" width="8" height="36" rx="3" fill="#2c4d6e"/></g>
-      <path d="M-13 -80 L13 -80 L11 -34 L-11 -34 Z" fill="#8c3b32"/>
-      <rect x="-14" y="-80" width="28" height="9" fill="#742f28"/>
-      <g class="arm-l"><rect x="-18" y="-76" width="6" height="32" rx="3" fill="#742f28"/></g>
-      <g class="arm-r"><rect x="12" y="-76" width="6" height="32" rx="3" fill="#742f28"/></g>
-      <circle cx="0" cy="-90" r="11" fill="#d9a066"/>
-      <path d="M-11 -93 Q0 -106 11 -93 L11 -88 L-11 -88 Z" fill="#c9a227"/>
-      <rect x="-11" y="-90" width="22" height="2.5" fill="#8a6d1d"/>
+      <ellipse cx="0" cy="0" rx="20" ry="5" fill="#000" opacity="0.25"/>
+      <g stroke="#2b1636" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+        <g class="leg-l">
+          <path d="M-7 -42 Q-9 -22 -8 -6" fill="none" stroke-width="7"/>
+          <path d="M-7 -42 Q-9 -22 -8 -6" fill="none" stroke="#2456a8" stroke-width="4"/>
+          <ellipse cx="-12" cy="-3" rx="11" ry="5" fill="#8a4a1e"/>
+        </g>
+        <g class="leg-r">
+          <path d="M7 -42 Q9 -22 8 -6" fill="none" stroke-width="7"/>
+          <path d="M7 -42 Q9 -22 8 -6" fill="none" stroke="#2f6bd0" stroke-width="4"/>
+          <ellipse cx="12" cy="-3" rx="11" ry="5" fill="#8a4a1e"/>
+        </g>
+        <path d="M-13 -72 Q0 -80 13 -72 Q17 -56 12 -40 Q0 -34 -12 -40 Q-17 -56 -13 -72 Z" fill="#d43d2a"/>
+        <g class="arm-l">
+          <path d="M-13 -66 Q-24 -56 -20 -42" fill="none" stroke-width="6"/>
+          <circle cx="-20" cy="-40" r="5.5" fill="#f2b98a"/>
+        </g>
+        <g class="arm-r">
+          <path d="M13 -66 Q24 -56 20 -42" fill="none" stroke-width="6"/>
+          <circle cx="20" cy="-40" r="5.5" fill="#f2b98a"/>
+        </g>
+        <circle cx="0" cy="-92" r="22" fill="#f2b98a"/>
+        <ellipse cx="18" cy="-88" rx="8" ry="6" fill="#f2a170"/>
+        <circle cx="6" cy="-96" r="5" fill="#fff"/>
+        <circle cx="14" cy="-96" r="4.4" fill="#fff"/>
+        <circle cx="7.5" cy="-96" r="2" fill="#2b1636" stroke="none"/>
+        <circle cx="15" cy="-96" r="1.8" fill="#2b1636" stroke="none"/>
+        <path d="M4 -80 Q10 -75 16 -79" fill="none" stroke-width="3"/>
+        <path d="M-22 -98 Q-14 -118 8 -112 Q20 -109 21 -101 Q0 -108 -20 -96 Z" fill="#ffb52e"/>
+        <path d="M14 -106 Q26 -106 30 -100 Q20 -102 13 -100 Z" fill="#ffb52e"/>
+      </g>
     </g>`;
 
   // ¿Hay gráficos horneados (pixel art EGA de tools/bake-scenes.js)?
@@ -367,11 +391,23 @@ const Engine = (() => {
     return typeof SCENES !== "undefined" ? SCENES : null;
   }
 
+  // Modo gráfico: cartoon vectorial (por defecto, estilo DOTT) o
+  // píxel EGA clásico — alternables como en DOTT Remastered.
+  let pixelMode = localStorage.getItem("pnc-pixel") === "1";
+
+  function togglePixel() {
+    pixelMode = !pixelMode;
+    localStorage.setItem("pnc-pixel", pixelMode ? "1" : "0");
+    paintChrome();
+    refreshScene();
+    renderInventory();
+  }
+
   // Spritesheet del personaje: 5 fotogramas de 16x32 (0 = quieto,
   // 1-4 = ciclo de andar). Se anima cambiando el viewBox del svg interior.
   function playerMarkup() {
     const S = baked();
-    if (S && S.player) {
+    if (pixelMode && S && S.player) {
       return `<g class="pj">
         <ellipse cx="0" cy="2" rx="15" ry="4" fill="#000" opacity="0.3"/>
         <svg class="sprite" x="-24" y="-94" width="48" height="96" viewBox="0 0 16 32">
@@ -574,7 +610,7 @@ const Engine = (() => {
   // o el SVG vectorial original como reserva.
   function sceneMarkup(r) {
     const S = baked();
-    const img = S && S.rooms && S.rooms[state.room];
+    const img = pixelMode && S && S.rooms && S.rooms[state.room];
     if (!img) return r.svg + variantSvg(r);
     let s = `<image href="${img}" x="0" y="0" width="960" height="540" preserveAspectRatio="none"/>`;
     if (r.variants) {
@@ -728,7 +764,7 @@ const Engine = (() => {
       b.dataset.item = id;
       const S = baked();
       b.innerHTML =
-        S && S.icons && S.icons[id]
+        pixelMode && S && S.icons && S.icons[id]
           ? `<img src="${S.icons[id]}" alt="">`
           : `<svg viewBox="0 0 48 48">${it.icon}</svg>`;
       b.addEventListener("click", () => {
@@ -766,6 +802,9 @@ const Engine = (() => {
       if (el) el.textContent = text;
     };
     set("btn-hint", ui().hints);
+    set("btn-pixel", ui().pixel);
+    const pixelBtn = document.getElementById("btn-pixel");
+    if (pixelBtn) pixelBtn.classList.toggle("off", !pixelMode);
     set("btn-save", ui().save);
     set("btn-load", ui().load);
     set("btn-restart", ui().restart);
@@ -872,6 +911,9 @@ const Engine = (() => {
 
     const hintBtn = document.getElementById("btn-hint");
     if (hintBtn) hintBtn.addEventListener("click", revealHotspots);
+
+    const pixelBtn = document.getElementById("btn-pixel");
+    if (pixelBtn) pixelBtn.addEventListener("click", togglePixel);
 
     const muteBtn = document.getElementById("btn-mute");
     if (muteBtn) {

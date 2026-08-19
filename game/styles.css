@@ -2,14 +2,17 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Paleta estilo Day of the Tentacle: púrpuras saturados, naranja
+ * cálido de acento y contornos gruesos por todas partes. */
 :root {
-  --bg: #12141c;
-  --panel: #1d2130;
-  --panel-2: #262b3f;
-  --border: #3a4157;
-  --text: #e8ecf5;
-  --dim: #9aa3bd;
-  --accent: #ffd97a;
+  --bg: #1c1033;
+  --panel: #2c1b4d;
+  --panel-2: #3d2868;
+  --border: #6b4fa0;
+  --outline: #14092b;
+  --text: #f3ecff;
+  --dim: #b8a6d9;
+  --accent: #ffb52e;
 }
 
 html, body { height: 100%; }
@@ -17,7 +20,7 @@ html, body { height: 100%; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Trebuchet MS", "Segoe UI", Verdana, sans-serif;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,8 +84,8 @@ body {
 /* ---------- Escena ---------- */
 
 #stage {
-  border: 2px solid var(--border);
-  border-radius: 10px;
+  border: 4px solid var(--outline);
+  border-radius: 14px;
   overflow: hidden;
   background: #000;
   transition: opacity 0.22s ease;
@@ -126,9 +129,9 @@ body {
 /* ---------- Animación ambiental de las escenas ---------- */
 
 @media (prefers-reduced-motion: no-preference) {
-  .anim-twinkle circle { animation: twinkle 4s ease-in-out infinite alternate; }
-  .anim-twinkle circle:nth-child(2n) { animation-delay: -2s; }
-  .anim-twinkle circle:nth-child(3n) { animation-delay: -1.2s; }
+  .anim-twinkle > * { animation: twinkle 4s ease-in-out infinite alternate; }
+  .anim-twinkle > *:nth-child(2n) { animation-delay: -2s; }
+  .anim-twinkle > *:nth-child(3n) { animation-delay: -1.2s; }
   .anim-sway {
     transform-box: fill-box;
     transform-origin: 50% 100%;
@@ -142,7 +145,8 @@ body {
   }
 }
 
-/* Animación de andar del personaje */
+/* Animación de andar del personaje: balanceo de extremidades y
+ * squash-and-stretch del cuerpo (principios Chuck Jones) */
 @media (prefers-reduced-motion: no-preference) {
   #player-g.walking .leg-l,
   #player-g.walking .arm-r {
@@ -156,9 +160,18 @@ body {
     transform-origin: top center;
     animation: legswing 0.42s ease-in-out infinite alternate-reverse;
   }
+  #player-g.walking .pj {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: squash 0.21s ease-in-out infinite alternate;
+  }
 }
 
-@keyframes legswing { from { transform: rotate(-16deg); } to { transform: rotate(16deg); } }
+@keyframes legswing { from { transform: rotate(-22deg); } to { transform: rotate(22deg); } }
+@keyframes squash {
+  from { transform: scale(1.04, 0.94); }
+  to   { transform: scale(0.97, 1.05); }
+}
 
 @keyframes twinkle { from { opacity: 0.35; } to { opacity: 1; } }
 @keyframes sway { from { transform: rotate(-1.6deg); } to { transform: rotate(1.6deg); } }
@@ -236,10 +249,11 @@ body {
 #verbs button {
   background: var(--panel);
   color: var(--dim);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 3px solid var(--border);
+  border-radius: 14px;
   padding: 10px 16px;
   font-size: 1rem;
+  font-weight: bold;
   font-family: inherit;
   cursor: pointer;
 }
@@ -250,6 +264,7 @@ body {
   background: var(--panel-2);
   color: var(--accent);
   border-color: var(--accent);
+  transform: rotate(-1.5deg) scale(1.05);
 }
 
 #inventory {

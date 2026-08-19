@@ -8,9 +8,20 @@ Dos actos, seis escenas, personaje andante, conversaciones con opciones de respu
 música y sonido generativos, puntuación estilo Sierra (135 puntos) y dos idiomas
 (español e inglés, botón EN/ES).
 
-**Gráficos estilo Sierra:** pixel art a 320×180 con la paleta EGA de 16 colores y
-tramado Bayer 4×4 (el «dithering» de los King's Quest), spritesheet del personaje con
-ciclo de andar de 4 fotogramas y capas de resplandor compuestas con transparencia.
+**Dos modos gráficos, alternables con el botón 🖼 (como en DOTT Remastered):**
+
+- **Cartoon (por defecto), estilo Day of the Tentacle:** el look que Peter Chan
+  (fondos) y Larry Ahern (personajes y animación) crearon en LucasArts en 1993
+  inspirándose en los cortos de Chuck Jones y Maurice Noble (*What's Opera, Doc?*,
+  *Duck Dodgers in the 24½th Century*): arquitectura combada y torcida donde nada es
+  recto, contornos negros gruesos, proporciones exageradas (cabezones, narizotas,
+  zapatones), squash-and-stretch al andar y paletas saturadas por zona — púrpuras y
+  naranjas cálidos en el pueblo y el faro, y los verdes neón y púrpuras «enfermizos»
+  del futuro tentáculo para la cala y la gruta de la sirena (con farero hipnotizado
+  de ojos en espiral incluido).
+- **Píxel (clásico), estilo Sierra:** pixel art a 320×180 con la paleta EGA de 16
+  colores y tramado Bayer 4×4 (el «dithering» de los King's Quest), spritesheet del
+  personaje con ciclo de andar de 4 fotogramas y capas de resplandor con transparencia.
 
 ## Cómo jugar
 
@@ -34,6 +45,7 @@ python3 -m http.server 8000
 | Responder en un diálogo | Clic en una de las opciones del cuadro de texto |
 | Saltar un mensaje | Clic sobre el cuadro de texto |
 | Ver las zonas interactivas | Botón *✨ Pistas* o barra espaciadora |
+| Cambiar de estilo gráfico | Botón *🖼 Píxel* (cartoon DOTT ⇄ píxel EGA) |
 | Idioma | Botón *EN / ES* |
 | Sonido / Música | Botones *🔊* y *🎵* (todo sintetizado con WebAudio, sin archivos) |
 | Guardar / Cargar | Botones superiores (usa `localStorage`; además hay autoguardado al cambiar de sala) |

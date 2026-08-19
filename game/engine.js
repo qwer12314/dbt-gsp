@@ -347,6 +347,7 @@ const Engine = (() => {
 
   // ---------- Personaje ----------
 
+  // Sprite vectorial de reserva (si no hay gráficos horneados)
   const PLAYER_SVG = `
     <g class="pj">
       <ellipse cx="0" cy="0" rx="16" ry="4" fill="#000" opacity="0.25"/>
@@ -361,9 +362,35 @@ const Engine = (() => {
       <rect x="-11" y="-90" width="22" height="2.5" fill="#8a6d1d"/>
     </g>`;
 
+  // ¿Hay gráficos horneados (pixel art EGA de tools/bake-scenes.js)?
+  function baked() {
+    return typeof SCENES !== "undefined" ? SCENES : null;
+  }
+
+  // Spritesheet del personaje: 5 fotogramas de 16x32 (0 = quieto,
+  // 1-4 = ciclo de andar). Se anima cambiando el viewBox del svg interior.
+  function playerMarkup() {
+    const S = baked();
+    if (S && S.player) {
+      return `<g class="pj">
+        <ellipse cx="0" cy="2" rx="15" ry="4" fill="#000" opacity="0.3"/>
+        <svg class="sprite" x="-24" y="-94" width="48" height="96" viewBox="0 0 16 32">
+          <image href="${S.player}" x="0" y="0" width="80" height="32"/>
+        </svg>
+      </g>`;
+    }
+    return PLAYER_SVG;
+  }
+
+  function setPlayerFrame(f) {
+    if (player.spriteEl) {
+      player.spriteEl.setAttribute("viewBox", `${f * 16} 0 16 32`);
+    }
+  }
+
   const player = {
     x: 0, y: 0, tx: 0, ty: 0,
-    cb: null, facing: 1, walking: false, raf: 0, el: null,
+    cb: null, facing: 1, walking: false, raf: 0, el: null, spriteEl: null,
   };
 
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
@@ -377,6 +404,15 @@ const Engine = (() => {
 
   function paintPlayer() {
     if (!player.el) return;
+    // Autocorrección: si alguna coordenada se corrompe, recoloca al
+    // personaje en la zona transitable en lugar de congelar el juego.
+    if (!isFinite(player.x) || !isFinite(player.y)) {
+      const f = room().floor;
+      player.x = f ? (f.xMin + f.xMax) / 2 : 480;
+      player.y = f ? f.yMax - 20 : 480;
+      player.tx = player.x;
+      player.ty = player.y;
+    }
     const s = playerScale(player.y);
     player.el.setAttribute(
       "transform",
@@ -398,8 +434,10 @@ const Engine = (() => {
       player.el = null;
       return;
     }
-    g.innerHTML = PLAYER_SVG;
+    g.innerHTML = playerMarkup();
     player.el = g;
+    player.spriteEl = g.querySelector(".sprite");
+    setPlayerFrame(0);
     const f = r.floor;
     const p =
       (r.spawns && (r.spawns[at] || r.spawns.default)) ||
@@ -419,8 +457,10 @@ const Engine = (() => {
       if (cb) cb();
       return;
     }
-    player.tx = clamp(pt.x, f.xMin, f.xMax);
-    player.ty = clamp(pt.y, f.yMin, f.yMax);
+    const gx = Number(pt && pt.x);
+    const gy = Number(pt && pt.y);
+    player.tx = clamp(isFinite(gx) ? gx : player.x, f.xMin, f.xMax);
+    player.ty = clamp(isFinite(gy) ? gy : player.y, f.yMin, f.yMax);
     player.cb = cb || null;
     if (Math.abs(player.tx - player.x) > 4) {
       player.facing = player.tx > player.x ? 1 : -1;
@@ -440,6 +480,7 @@ const Engine = (() => {
           player.x = player.tx;
           player.y = player.ty;
           player.walking = false;
+          setPlayerFrame(0);
           paintPlayer();
           const done = player.cb;
           player.cb = null;
@@ -448,6 +489,7 @@ const Engine = (() => {
         }
         player.x += (dx / d) * speed * dt;
         player.y += (dy / d) * speed * dt;
+        setPlayerFrame(1 + (Math.floor(now / 110) % 4)); // ciclo de andar
         paintPlayer();
         player.raf = requestAnimationFrame(step);
       };
@@ -528,6 +570,24 @@ const Engine = (() => {
       .join("");
   }
 
+  // Escena: pixel art horneado si existe (base + capas transparentes),
+  // o el SVG vectorial original como reserva.
+  function sceneMarkup(r) {
+    const S = baked();
+    const img = S && S.rooms && S.rooms[state.room];
+    if (!img) return r.svg + variantSvg(r);
+    let s = `<image href="${img}" x="0" y="0" width="960" height="540" preserveAspectRatio="none"/>`;
+    if (r.variants) {
+      r.variants.forEach((v, i) => {
+        const layer = S.variants[state.room] && S.variants[state.room][i];
+        if (layer && checkCond(v.if)) {
+          s += `<image href="${layer}" x="0" y="0" width="960" height="540" preserveAspectRatio="none" class="overlay-glow"/>`;
+        }
+      });
+    }
+    return s;
+  }
+
   function renderRoom() {
     const r = room();
     document.getElementById("room-name").textContent = L(r.name);
@@ -535,8 +595,7 @@ const Engine = (() => {
     const stage = document.getElementById("stage");
     stage.innerHTML =
       `<svg id="scene" viewBox="0 0 960 540" preserveAspectRatio="xMidYMid meet">` +
-      r.svg +
-      variantSvg(r) +
+      sceneMarkup(r) +
       `<g id="player-g"></g><g id="hotspots"></g></svg>`;
 
     const svg = stage.querySelector("svg");
@@ -667,7 +726,11 @@ const Engine = (() => {
       b.className = "item" + (selectedItem === id ? " selected" : "");
       b.title = L(it.name);
       b.dataset.item = id;
-      b.innerHTML = `<svg viewBox="0 0 48 48">${it.icon}</svg>`;
+      const S = baked();
+      b.innerHTML =
+        S && S.icons && S.icons[id]
+          ? `<img src="${S.icons[id]}" alt="">`
+          : `<svg viewBox="0 0 48 48">${it.icon}</svg>`;
       b.addEventListener("click", () => {
         skipMessage();
         if (choicesActive) return;

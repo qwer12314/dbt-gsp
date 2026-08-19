@@ -93,6 +93,22 @@ body {
 
 #scene { width: 100%; height: auto; display: block; }
 
+/* Pixel art nítido: nada de suavizado al escalar */
+#scene image,
+.item img {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.item img { width: 100%; height: 100%; display: block; }
+
+/* Capas de variante (resplandores) con transparencia animada */
+@media (prefers-reduced-motion: no-preference) {
+  .overlay-glow { animation: overlayglow 3s ease-in-out infinite alternate; }
+}
+
+@keyframes overlayglow { from { opacity: 0.75; } to { opacity: 1; } }
+
 .hotspot {
   fill: transparent;
   stroke: transparent;

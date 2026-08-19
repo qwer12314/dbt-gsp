@@ -8,6 +8,10 @@ Dos actos, seis escenas, personaje andante, conversaciones con opciones de respu
 música y sonido generativos, puntuación estilo Sierra (135 puntos) y dos idiomas
 (español e inglés, botón EN/ES).
 
+**Gráficos estilo Sierra:** pixel art a 320×180 con la paleta EGA de 16 colores y
+tramado Bayer 4×4 (el «dithering» de los King's Quest), spritesheet del personaje con
+ciclo de andar de 4 fotogramas y capas de resplandor compuestas con transparencia.
+
 ## Cómo jugar
 
 Abre `index.html` en el navegador. No hace falta servidor, aunque también puedes usar uno:
@@ -54,6 +58,10 @@ game/engine.js      Motor genérico: nodos, hotspots, personaje andante, verbos,
 game/audio.js       Sonido: ambiente de mar/viento, música generativa y
                     efectos, todo sintetizado con WebAudio (sin archivos)
 game/game-data.js   EL JUEGO: habitaciones, objetos, puzles y textos (es/en)
+game/scenes.js      Gráficos horneados (generado): escenas EGA, variantes
+                    transparentes, iconos y spritesheet como data URIs
+game/assets/        player-sheet.png: el spritesheet del personaje (editable)
+tools/bake-scenes.js  Herramienta de horneado: SVG → pixel art EGA
 ```
 
 ### Anatomía de una habitación (nodo)
@@ -119,6 +127,23 @@ Cualquier acción (`look`, `use`, `talk`, `items.X`, `onEnter`, `intro`) admite:
 
 Condiciones disponibles: `{ flag }`, `{ notFlag }`, `{ hasItem }`, `{ notItem }`,
 `{ all: [...] }`, `{ any: [...] }` o una función `(api) => boolean`.
+
+### La tubería de gráficos (SVG → pixel art EGA)
+
+Las escenas se **dibujan en SVG** (fácil de editar) y se **hornean a pixel art**:
+
+```bash
+node tools/bake-scenes.js   # requiere Playwright
+```
+
+El horneado rasteriza cada sala a 320×180, cuantiza los colores a la paleta EGA de
+16 colores con realce de saturación y tramado ordenado Bayer 4×4, y guarda todo en
+`game/scenes.js`. Las **variantes** (el faro encendido, la lámpara ardiendo) se generan
+como capas PNG con canal alfa que el motor superpone —transparencias reales sobre el
+pixel art— y el **spritesheet del personaje** (5 fotogramas de 16×32, dibujado píxel a
+píxel en el propio script) se anima recortando el `viewBox`. Si `game/scenes.js` no
+está cargado, el motor usa los SVG vectoriales originales: la versión pixel art es una
+capa de presentación, no una dependencia.
 
 ### Crear tu propio juego
 
